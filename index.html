@@ -511,8 +511,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
         grow('#8e8e93',ig('M12 7v5l3 2M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0'),'Session','x',mins+' min')+
       '</div>'+
       '<div class="cap" style="margin-top:-8px">Профіль і прогрес зберігаються лише в цьому браузері. Пошта тут для вигляду, листи не надсилаються.</div>'+
-      '<div class="card"><div class="row click" tabindex="0" data-reset><span style="color:var(--red)">Reset Progress</span></div>'+
-      '<div class="row click" tabindex="0" data-signout><span style="color:var(--red)">Sign Out</span></div></div>';
+      '<div class="card"><div class="row click" tabindex="0" data-signout><span style="color:var(--red)">Sign Out</span></div></div>';
     p.innerHTML=h;
   }
   function nTitle(n){var l=n.text.trim().split('\n')[0];return l||'Нова нотатка'}
@@ -568,7 +567,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var everyone=[{name:'sweet_home',signal:3}].concat(nets);
     var cn=everyone.filter(function(n){return n.name===connected})[0];
     var h='<div class="editrow"><button class="editbtn" data-gsub="x">Edit</button></div><div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(mail?esc(acct):'Sign in')+'</button></div>';
-    if(all)h+='<div class="win"><h3>Усі мережі зламано</h3><p>Це лише гра: паролі випадкові, справжніх мереж тут немає. Спробуй ще раз із новими кодами.</p><button class="btn" data-again>Грати знову</button></div>';
+    if(all)h+='<div class="win"><h3>Усі мережі зламано</h3><p>Це лише гра: паролі випадкові, справжніх мереж тут немає. Ти молодець.</p></div>';
     h+='<div class="card"><div class="hero"><div class="big">'+wifi(3,38)+'</div><h1>Wi-Fi</h1>'+
       '<p>Connect to Wi-Fi, view available networks, and manage settings for joining networks and nearby hotspots. <span class="link">Learn more…</span></p></div>'+
       '<div class="row"><span class="name" style="padding-left:44px">Wi-Fi</span><button class="sw'+(wifiOn&&!airplane?' on':'')+'" data-wifi aria-label="Wi-Fi"></button></div>'+
@@ -803,14 +802,9 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var gs=t.closest('[data-gsub]');
     if(gs){var gk=gs.getAttribute('data-gsub');if(gk==='x')toast('Недоступно в грі','Settings');else{gsub=gk;renderPane()}return}
     if(t.closest('[data-gback]')){gsub=null;renderPane();return}
-    if(t.closest('[data-reset]')){
-      alertBox('Reset Progress?','Усі зламані мережі та батарея повернуться до початку. Імʼя збережеться.',[{t:'Cancel'},{t:'Reset',red:1,fn:function(){newGame();renderAll();toast('Прогрес скинуто','Settings')}}]);
-      return;
-    }
     var pgEl=t.closest('[data-page]');
     if(pgEl){page=pgEl.getAttribute('data-page');view=null;gsub=null;noteOpen=null;notes=notes.filter(function(x){return x.text.trim()});renderAll();return}
     if(t.closest('[data-chg]')){charging=!charging;if(charging)showCharge();else $('#chgscr').classList.remove('on');toast(charging?'Charger connected':'Charger disconnected','Battery');renderAll();return}
-    if(t.closest('[data-again]')){newGame();renderAll();return}
     if(t.closest('[data-auto]')){autoJoin[view]=autoJoin[view]===false;renderPane();return}
     if(t.closest('[data-pw]')){
       var n2=net(view);if(n2&&n2.open){toast('Відкрита мережа без пароля','Wi-Fi');return}
@@ -821,8 +815,8 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(t.closest('[data-forget]')){
       if(view==='sweet_home'){alertBox('Cannot Forget Network','«sweet_home» — це твоя домашня мережа.',[{t:'OK',b:1}]);return}
       var fv=view;
-      alertBox('Forget Wi-Fi Network “'+fv+'”?','Your iPad will no longer join this Wi-Fi network. Роутер згенерує новий пароль.',[{t:'Cancel'},{t:'Forget',red:1,fn:function(){
-        var n3=net(fv);resetNet(n3);if(connected===fv)connected='sweet_home';
+      alertBox('Forget Wi-Fi Network “'+fv+'”?','Your iPad will no longer join this Wi-Fi network.',[{t:'Cancel'},{t:'Forget',red:1,fn:function(){
+        var n3=net(fv);n3.cracked=false;n3.prog=0;n3.dictDone=false;if(connected===fv)connected='sweet_home';
         view=null;renderAll();toast('Мережу забуто','Wi-Fi');
       }}]);
     }
