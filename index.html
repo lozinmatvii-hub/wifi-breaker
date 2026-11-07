@@ -170,7 +170,7 @@ button.me:hover{background:#15171b}
 .ntxt{width:100%;min-height:320px;background:none;border:0;color:#fff;font:inherit;font-size:18px;line-height:1.45;resize:vertical;outline:0}
 .batt.lpm{background:#ffd60a;color:#000}
 body.bold{font-weight:600}
-#clock,#wf{display:none}.status{justify-content:flex-end}
+#clock,#wf,#batt{display:none}.status{justify-content:flex-end}
 body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{display:none}body.fsmode .status{justify-content:flex-end}body.fsmode .app{padding-top:62px}
 #dimmer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:200}
 #tint{position:fixed;inset:0;background:#fff1dc;mix-blend-mode:multiply;pointer-events:none;z-index:199}
@@ -192,16 +192,16 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
 </style>
 
 <div class="app">
-  <div class="status"><span id="clock"></span><span class="r"><button id="fs" aria-label="Full screen" title="На весь екран"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button><span id="wf"></span><span class="batt" id="batt">34</span></span></div>
+  <div class="status"><span id="clock"></span><span class="r"><button id="fs" aria-label="Full screen" title="Full screen"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button><span id="wf"></span><span class="batt" id="batt">34</span></span></div>
   <aside class="side" id="side"></aside>
   <main class="main"><div class="mnav" id="mnav"></div><div class="wrap" id="pane"></div></main>
 </div>
 <div class="banner" id="toast" role="status" aria-live="polite"><span class="bi" id="bico"></span><div><b id="btitle"></b><span class="bm" id="bmsg"></span></div><time>now</time></div>
 <div id="tint"></div><div id="dimmer"></div>
-<div class="chgscr" id="lockscr" aria-hidden="true"><div id="lkt" style="font-size:96px;font-weight:300;letter-spacing:-.02em"></div><div class="pct" style="font-size:15px">Тапни, щоб розбудити</div></div>
+<div class="chgscr" id="lockscr" aria-hidden="true"><div id="lkt" style="font-size:96px;font-weight:300;letter-spacing:-.02em"></div><div class="pct" style="font-size:15px">Tap to wake</div></div>
 <div class="chgscr" id="chgscr" aria-hidden="true">
   <svg width="132" height="68" viewBox="0 0 110 56" fill="none"><rect x="2" y="2" width="94" height="52" rx="15" stroke="#fff" stroke-width="3.5"/><rect x="100" y="18" width="7" height="20" rx="3" fill="#fff"/><rect id="cfill" x="8" y="8" width="40" height="40" rx="10" fill="#30d158"/></svg>
-  <div class="pct" id="cpct"></div><div class="pct" style="font-size:14px">Заряджається</div>
+  <div class="pct" id="cpct"></div><div class="pct" style="font-size:14px">Charging</div>
 </div>
 <div id="sheetHost"></div>
 
@@ -244,7 +244,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   /* ---------- game state ---------- */
   /* ---------- game state ---------- */
   var CS={l:'abcdefghijklmnopqrstuvwxyz',d:'0123456789',ld:'abcdefghijklmnopqrstuvwxyz0123456789',Ld:'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',Lds:'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*?'};
-  var CSN={l:'літери a–z',d:'цифри 0–9',ld:'a–z, 0–9',Ld:'a–z, A–Z, 0–9',Lds:'a–z, A–Z, 0–9, !@#$%&*?'};
+  var CSN={l:'letters a–z',d:'digits 0–9',ld:'a–z, 0–9',Ld:'a–z, A–Z, 0–9',Lds:'a–z, A–Z, 0–9, !@#$%&*?'};
   var COMMON={Euphoria:['1234','0000','1111'],Euphoria1:['123456','111111','000000'],k35:['qwerty','abc123','hello1']};
   var WORDS=['password','qwerty','letmein','admin123','iloveyou','welcome1','dragon','monkey12','sunshine','football'];
   var DEFS=[
@@ -274,7 +274,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     return s;
   }
   function resetNet(n){n.password=rndPw(n);n.prog=0;n.cracked=false;n.dictDone=false;n.weak=(COMMON[n.name]||[]).indexOf(n.password)>=0}
-  var acct='Гравець',mail='',mem={};
+  var acct='Player',mail='',mem={};
   var PERSON='<svg width="30" height="30" viewBox="0 0 30 30" fill="#8e8e93"><circle cx="15" cy="11" r="5.5"/><path d="M4 27c1-6 6-9 11-9s10 3 11 9z"/></svg>';
   function ls(k,v,del){
     try{
@@ -323,27 +323,27 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     document.body.classList.toggle('bold',boldTxt);
   }
   function meHtml(){
-    if(!mail)return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av" style="background:#2c2c2e">'+PERSON+'</div><div><b>Sign in</b><small>Увійди з поштою, щоб відкрити ігровий профіль</small></div></button>';
-    return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av">'+esc(acct.slice(0,2).toUpperCase())+'</div><div><b>'+esc(acct)+'</b><small>'+esc(mail)+' · зламано '+cracked()+'/'+nets.length+'</small></div></button>';
+    if(!mail)return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av" style="background:#2c2c2e">'+PERSON+'</div><div><b>Sign in</b><small>Sign in with your email to open your game profile</small></div></button>';
+    return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av">'+esc(acct.slice(0,2).toUpperCase())+'</div><div><b>'+esc(acct)+'</b><small>'+esc(mail)+' · cracked '+cracked()+'/'+nets.length+'</small></div></button>';
   }
   function openAcct(){
     var host=$('#sheetHost');
     host.innerHTML='<div class="dim" id="dim"><div class="sheet" id="acct" role="dialog" aria-label="Player Name">'+
       '<div class="sh-top"><button class="round" id="sx" aria-label="Cancel">'+ICON.x+'</button><button class="round ok ready" id="aok" aria-label="Done">'+ICON.check+'</button></div>'+
       '<div class="sh-wifi"><div class="av" style="width:84px;height:84px;font-size:32px">'+esc(acct.slice(0,2).toUpperCase())+'</div></div>'+
-      '<h3>'+(mail?'Name &amp; Email':'Sign In')+'</h3><div class="sub">Вкажи імʼя та пошту для ігрового профілю. Пароль не потрібен.</div>'+
+      '<h3>'+(mail?'Name &amp; Email':'Sign In')+'</h3><div class="sub">Enter a name and email for your game profile. No password needed.</div>'+
       '<input class="pw txt" id="an" type="text" value="'+esc(acct)+'" maxlength="16" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="Name" aria-label="Name">'+
       '<input class="pw txt" id="am" type="email" value="'+esc(mail)+'" maxlength="60" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="Email" aria-label="Email" style="margin-top:10px">'+
-      '<div class="note">Це лише гра: пошта зберігається тільки в цьому браузері, листи не надсилаються. Краще вигадай адресу, наприклад player@example.com.</div>'+
+      '<div class="note">This is only a game: the email stays in this browser and no messages are sent. Better use a made-up address, e.g. player@example.com.</div>'+
       '<div id="amsg"></div></div></div>';
     $('#sx').onclick=closeSheet;
     $('#dim').addEventListener('mousedown',function(e){if(e.target.id==='dim')closeSheet()});
     function submit(){
       var nm=$('#an').value.trim();
-      if(!/^[\wЀ-ӿ -]{1,16}$/.test(nm)){$('#amsg').innerHTML='<div class="alert">Імʼя: 1–16 символів, літери, цифри, пробіл, _ або -.</div>';return}
+      if(!/^[\wЀ-ӿ -]{1,16}$/.test(nm)){$('#amsg').innerHTML='<div class="alert">Name: 1–16 characters: letters, digits, space, _ or -.</div>';return}
       var em=$('#am').value.trim();
-      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){$('#amsg').innerHTML='<div class="alert">Введи пошту у форматі name@example.com.</div>';return}
-      acct=nm;mail=em;closeSheet();renderAll();toast('Вхід виконано: '+em,'Settings');
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){$('#amsg').innerHTML='<div class="alert">Enter an email like name@example.com.</div>';return}
+      acct=nm;mail=em;closeSheet();renderAll();toast('Signed in: '+em,'Settings');
     }
     $('#aok').onclick=submit;
     $('#an').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('#am').focus()}});
@@ -430,7 +430,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     });
     $('#side').innerHTML=h;
     var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General'],['display','Display'],['notes','Notes']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
-      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+(mail?esc(acct):'Sign in')+'</button><button data-air'+(airplane?' class="on"':'')+'>Літак</button>';
+      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+(mail?esc(acct):'Sign in')+'</button><button data-air'+(airplane?' class="on"':'')+'>Airplane</button>';
     $('#mnav').innerHTML=mn;
   }
   var CHEV='<svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="#6b6b70" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l6 6-6 6"/></svg>';
@@ -448,7 +448,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
         '<div class="hd">My Devices</div><div class="card"><div class="row click" tabindex="0" data-btdev><span class="name">CW-TWS2</span><span class="val">Not Connected</span><button class="info" data-btdev aria-label="Info">i</button></div></div>'+
         '<div class="hd" style="display:flex;gap:10px;align-items:center;margin-top:30px">Other Devices <i class="spin" style="width:16px;height:16px;margin:0"></i></div>';
     }else if(airplane){
-      h+='<div class="cap" style="margin-top:-12px">Режим польоту вимкнув Bluetooth.</div>';
+      h+='<div class="cap" style="margin-top:-12px">Airplane Mode turned Bluetooth off.</div>';
     }
     p.innerHTML=h;
   }
@@ -499,7 +499,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:34px">'+
       '<div class="av" style="width:150px;height:150px;font-size:56px">'+ini+'</div>'+
       '<div style="font-size:34px;font-weight:700;margin-top:12px;overflow-wrap:anywhere;text-align:center">'+esc(acct)+'</div>'+
-      '<div style="color:var(--dim);font-size:20px">Ігровий профіль</div></div>'+
+      '<div style="color:var(--dim);font-size:20px">Game Profile</div></div>'+
       '<div class="card"><div class="row click" tabindex="0" data-rename><span class="name">Name</span><span class="val">'+esc(acct)+'</span>'+CHEV+'</div>'+
         '<div class="row click" tabindex="0" data-rename><span class="name">Email</span><span class="val">'+esc(mail)+'</span>'+CHEV+'</div>'+
         grow('#8e8e93',ig('M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3M12 13v4M8 20h8'),'Achievements','x')+
@@ -510,24 +510,24 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
         grow('#30d158',S.bat,'Battery','x',battery+'%')+
         grow('#8e8e93',ig('M12 7v5l3 2M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0'),'Session','x',mins+' min')+
       '</div>'+
-      '<div class="cap" style="margin-top:-8px">Профіль і прогрес зберігаються лише в цьому браузері. Пошта тут для вигляду, листи не надсилаються.</div>'+
+      '<div class="cap" style="margin-top:-8px">Your profile and progress are saved only in this browser. The email is for show; no messages are sent.</div>'+
       '<div class="card"><div class="row click" tabindex="0" data-signout><span style="color:var(--red)">Sign Out</span></div></div>';
     p.innerHTML=h;
   }
-  function nTitle(n){var l=n.text.trim().split('\n')[0];return l||'Нова нотатка'}
-  function nBody(n){var a=n.text.trim().split('\n').slice(1).join(' ').trim();return a||'Без додаткового тексту'}
+  function nTitle(n){var l=n.text.trim().split('\n')[0];return l||'New Note'}
+  function nBody(n){var a=n.text.trim().split('\n').slice(1).join(' ').trim();return a||'No additional text'}
   function nDate(t){var d=new Date(t);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' · '+d.getDate()+'.'+('0'+(d.getMonth()+1)).slice(-2)}
   function renderNotes(p){
     var cur2=notes.filter(function(x){return x.id===noteOpen})[0];
     if(noteOpen!==null&&cur2){
       p.innerHTML='<div class="top"><button class="round" data-nback aria-label="Back">'+ICON.back+'</button><h2>Note</h2></div>'+
-        '<div class="card" style="padding:14px 18px"><textarea class="ntxt" id="nt" placeholder="Пиши тут: паролі, підказки, ідеї…" aria-label="Note">'+esc(cur2.text)+'</textarea></div>'+
+        '<div class="card" style="padding:14px 18px"><textarea class="ntxt" id="nt" placeholder="Write here: passwords, hints, ideas…" aria-label="Note">'+esc(cur2.text)+'</textarea></div>'+
         '<div class="card"><div class="row click" tabindex="0" data-ndel><span style="color:var(--red)">Delete Note</span></div></div>';
       return;
     }
     var h='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Notes</h2></div>'+
       '<div class="editrow"><button class="btn" data-nnew>＋ New Note</button></div>';
-    if(!notes.length)h+='<div class="card" style="padding:26px 18px;text-align:center;color:var(--dim)">Нотаток ще немає. Запиши підказки до паролів або свої плани.</div>';
+    if(!notes.length)h+='<div class="card" style="padding:26px 18px;text-align:center;color:var(--dim)">No notes yet. Write down password hints or your plans.</div>';
     else h+='<div class="card">'+notes.map(function(n){return '<div class="row click" tabindex="0" data-nopen="'+n.id+'" style="min-height:66px"><span class="name"><b>'+esc(nTitle(n))+'</b><br><span style="color:var(--dim);font-size:14px">'+nDate(n.t)+'  '+esc(nBody(n)).slice(0,60)+'</span></span>'+CHEV+'</div>'}).join('')+'</div>';
     p.innerHTML=h;
   }
@@ -542,7 +542,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div class="card"><div class="row"><span class="name">Night Shift</span><button class="sw'+(nightShift?' on':'')+'" data-ns aria-label="Night Shift"></button></div></div>'+
       '<div class="cap">Warms the display colours, so it is easier on the eyes at night.</div>'+
       '<div class="card"><div class="row click" tabindex="0" data-al><span class="name">Auto-Lock</span><span class="val">'+LOCKS[lockIdx][0]+'</span>'+CHEV+'</div></div>'+
-      '<div class="cap">Екран гасне після паузи в діях (не під час підбору пароля). Тапни, щоб змінити час.</div>'+
+      '<div class="cap">The screen turns off after a pause (not while a password attack is running). Tap to change the time.</div>'+
       '<div class="hd">Text</div><div class="card"><div class="row"><span class="name">Bold Text</span><button class="sw'+(boldTxt?' on':'')+'" data-bold aria-label="Bold Text"></button></div></div>';
     p.innerHTML=h;
   }
@@ -566,13 +566,13 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var all=cracked()===nets.length;
     var everyone=[{name:'sweet_home',signal:3}].concat(nets);
     var cn=everyone.filter(function(n){return n.name===connected})[0];
-    var h='<div class="editrow"><button class="editbtn" data-gsub="x">Edit</button></div><div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(mail?esc(acct):'Sign in')+'</button></div>';
-    if(all)h+='<div class="win"><h3>Усі мережі зламано</h3><p>Це лише гра: паролі випадкові, справжніх мереж тут немає. Ти молодець.</p></div>';
+    var h='<div class="editrow"><button class="editbtn" data-gsub="x">Edit</button></div><div class="score">Networks cracked <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Battery <b>'+battery+'%</b>'+(charging?' (charging)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(mail?esc(acct):'Sign in')+'</button></div>';
+    if(all)h+='<div class="win"><h3>All networks cracked</h3><p>This is only a game: passwords are random and there are no real networks here. Well done.</p></div>';
     h+='<div class="card"><div class="hero"><div class="big">'+wifi(3,38)+'</div><h1>Wi-Fi</h1>'+
       '<p>Connect to Wi-Fi, view available networks, and manage settings for joining networks and nearby hotspots. <span class="link">Learn more…</span></p></div>'+
       '<div class="row"><span class="name" style="padding-left:44px">Wi-Fi</span><button class="sw'+(wifiOn&&!airplane?' on':'')+'" data-wifi aria-label="Wi-Fi"></button></div>'+
       (wifiOn&&!airplane?netRow(cn):'')+'</div>';
-    if(!wifiOn||airplane){p.innerHTML=h+'<div class="cap" style="margin-top:-6px">'+(airplane?'Режим польоту вимкнув Wi-Fi і Bluetooth.':'Wi-Fi вимкнено. Увімкни, щоб побачити мережі.')+'</div>';return}
+    if(!wifiOn||airplane){p.innerHTML=h+'<div class="cap" style="margin-top:-6px">'+(airplane?'Airplane Mode turned Wi-Fi and Bluetooth off.':'Wi-Fi is off. Turn it on to see networks.')+'</div>';return}
     var saved=everyone.filter(function(n){return n.name!==connected&&(n.name==='sweet_home'||n.cracked)});
     var other=nets.filter(function(n){return n.name!==connected&&!n.cracked});
     if(saved.length)h+='<div class="hd">My Networks</div><div class="card">'+saved.map(netRow).join('')+'</div>';
@@ -611,9 +611,9 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div style="margin-top:12px;font-size:15px"><b>Last Charged to '+(lastCharge?lastCharge.to+'%':'69%')+':</b> <span style="color:var(--dim)">'+(lastCharge?lastCharge.t:'16:06')+'</span></div></div>'+
       '<div class="card"><div class="row"><span class="name">Charger</span><button class="sw'+(charging?' on':'')+'" data-chg aria-label="Charger"></button></div>'+
       '<div class="row"><span class="name">Low Power Mode</span><button class="sw'+(lpm?' on':'')+'" data-lpm aria-label="Low Power Mode"></button></div></div>'+
-      '<div class="cap">Підключи зарядку, щоб батарея відновлювалась: +1% приблизно кожні секунду. На 0% підбір зупиняється, поки не зарядиш пристрій. Low Power Mode вдвічі зменшує витрату.</div>'+
+      '<div class="cap">Connect the charger to restore the battery: about +1% every second. At 0% the attack stops until you charge the device. Low Power Mode halves the drain.</div>'+
       '<div class="hd">Daily Usage</div><div class="card" style="padding:16px 18px">'+
-      '<div style="font-size:17px;font-weight:600;line-height:1.35;padding-bottom:14px;border-bottom:1px solid var(--sep)">'+(spent>40?'Сьогодні ти витрачаєш більше батареї, ніж зазвичай.':'You’re using a similar amount of battery today as you usually do by '+hhmm()+'.')+'</div>'+
+      '<div style="font-size:17px;font-weight:600;line-height:1.35;padding-bottom:14px;border-bottom:1px solid var(--sep)">'+(spent>40?'You’re using more battery today than usual.':'You’re using a similar amount of battery today as you usually do by '+hhmm()+'.')+'</div>'+
       '<div class="stat"><div><small>Average</small><b>53<i>%</i></b></div><div><small style="color:var(--blue)">Today</small><b style="color:var(--blue)">'+today+'<i>%</i></b></div></div>'+
       '<div class="bars">'+bars+'</div><div class="dl">'+lbl+'</div>'+
       '<div style="font-size:17px;font-weight:600;margin:14px 0 4px">App and System Activity</div>'+
@@ -631,20 +631,20 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div class="card"><div class="row click" data-forget><span class="link">Forget This Network</span></div></div>'+
       '<div class="card"><div class="row"><span class="name">Auto-Join</span><button class="sw'+(autoJoin[name]!==false?' on':'')+'" data-auto aria-label="Auto-Join"></button></div>'+
       '<div class="row click" data-pw><span class="name">Password</span><span class="val '+(shown&&known?'mono':'')+'">'+
-        (n&&n.open?'Немає':known?(shown?pw:'●●●●●●●●'):'Невідомо')+'</span></div></div>'+
-      '<div class="cap">'+(known?'Тапни рядок Password, щоб показати або сховати пароль.':'Пароль ще не зламано. Відкрий Join та підбери код.')+'</div>'+
+        (n&&n.open?'None':known?(shown?pw:'●●●●●●●●'):'Unknown')+'</span></div></div>'+
+      '<div class="cap">'+(known?'Tap the Password row to show or hide the password.':'Password not cracked yet. Open Join and crack the code.')+'</div>'+
       '<div class="card"><div class="row"><span class="name">Security</span><span class="val">'+(home?'WPA2 Personal':n.sec)+'</span></div>'+
-      '<div class="row"><span class="name">Довжина пароля</span><span class="val">'+(n&&n.open?'—':(home?8:n.len)+' симв.')+'</span></div>'+
-      (home||n.open?'':'<div class="row"><span class="name">Складність</span><span class="val">Рівень '+n.lvl+' з 7</span></div><div class="row"><span class="name">Символи</span><span class="val">'+CSN[n.cs]+'</span></div>')+
-      '<div class="row"><span class="name">Сигнал</span><span class="val">'+['','слабкий','середній','сильний'][n?n.signal:3]+'</span></div>'+
+      '<div class="row"><span class="name">Password Length</span><span class="val">'+(n&&n.open?'—':(home?8:n.len)+' chars')+'</span></div>'+
+      (home||n.open?'':'<div class="row"><span class="name">Difficulty</span><span class="val">Level '+n.lvl+' of 7</span></div><div class="row"><span class="name">Characters</span><span class="val">'+CSN[n.cs]+'</span></div>')+
+      '<div class="row"><span class="name">Signal</span><span class="val">'+['','weak','medium','strong'][n?n.signal:3]+'</span></div>'+
       '<div class="row"><span class="name">Wi-Fi Type</span><span class="val">Wi-Fi 5 (802.11ac)</span></div></div>';
     p.innerHTML=h;
   }
 
   /* ---------- join sheet: type a password or run an attack ---------- */
   var cur=null,crackTimer=null,cracking=false,drainAcc=0,lastB=-1,mode='brute',dp=0,lockLeft=0,wasC=false;
-  var STB=['Сканування каналу','Перехоплення handshake','Збір пакетів','Перебір ключів','Перевірка збігу'];
-  var STD=['Сканування каналу','Перехоплення handshake','Перевірка за словником'];
+  var STB=['Scanning channel','Capturing handshake','Collecting packets','Trying keys','Verifying match'];
+  var STD=['Scanning channel','Capturing handshake','Checking dictionary'];
   function fnum(x){
     if(x<10000)return String(Math.floor(x)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
     var e=Math.floor(Math.log10(x));return (x/Math.pow(10,e)).toFixed(1)+'e'+e;
@@ -659,15 +659,15 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div class="sh-wifi">'+bigWifi()+'</div>'+
       '<h3>Enter Password</h3><div class="sub">Enter the password for “'+esc(n.name)+'”.</div>'+
       '<input class="pw" id="pw" type="text" placeholder="Password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="join" aria-label="Password">'+
-      '<div class="chips"><span class="chip" style="color:'+lvlColor(n.lvl)+'">'+n.sec+'</span><span class="chip">Рівень '+n.lvl+'</span><span class="chip">'+n.len+' симв.</span><span class="chip">'+CSN[n.cs]+'</span></div>'+
-      '<div class="gsep">Автоматичний підбір</div>'+
-      '<div class="seg" id="seg"><button data-m="dict">Словник</button><button data-m="brute">Перебір</button></div>'+
+      '<div class="chips"><span class="chip" style="color:'+lvlColor(n.lvl)+'">'+n.sec+'</span><span class="chip">Level '+n.lvl+'</span><span class="chip">'+n.len+' chars</span><span class="chip">'+CSN[n.cs]+'</span></div>'+
+      '<div class="gsep">Automatic attack</div>'+
+      '<div class="seg" id="seg"><button data-m="dict">Dictionary</button><button data-m="brute">Brute force</button></div>'+
       '<div class="note" id="mnote" style="margin-top:8px"></div>'+
       '<div class="bar" style="margin:16px 6px 0"><i id="pfill" style="width:0;background:var(--blue)"></i></div>'+
       '<div class="hint"><span id="ptxt"></span><span id="peta"></span></div>'+
       '<div class="term" id="term"></div>'+
       '<div class="plog" id="plog"></div>'+
-      '<button class="btn" id="go" style="margin-top:14px;width:100%">Почати підбір</button>'+
+      '<button class="btn" id="go" style="margin-top:14px;width:100%">Start attack</button>'+
       '<div id="msg"></div></div></div>';
     $('#sx').onclick=closeSheet;$('#sok').onclick=submitPw;$('#go').onclick=toggleCrack;
     $('#pw').addEventListener('input',updateOk);
@@ -685,7 +685,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   function submitPw(){
     var n=cur;if(!n||cracking||n.cracked)return;
     var el=$('#pw'),v=el.value;if(!v)return;
-    if(v===n.password){n.cracked=true;closeSheet();connect(n.name,'Підключено до «'+n.name+'».')}
+    if(v===n.password){n.cracked=true;closeSheet();connect(n.name,'Connected to «'+n.name+'».')}
     else{
       el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');
       alertBox('Incorrect Password','The password you entered for “'+n.name+'” is incorrect.',[{t:'OK',b:1}]);
@@ -701,7 +701,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     updateSheet();
   }
   function stopCrack(){cracking=false;clearInterval(crackTimer);crackTimer=null}
-  function finish(n){setTimeout(function(){if(cur===n){closeSheet();connect(n.name,'Підключено до «'+n.name+'». Пароль підібрано.')}},900)}
+  function finish(n){setTimeout(function(){if(cur===n){closeSheet();connect(n.name,'Connected to «'+n.name+'». Password cracked.')}},900)}
   function crackStep(){
     var n=cur;if(!n){stopCrack();return}
     var dt=0.1;
@@ -737,26 +737,26 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     }else if(wasC){inp.value='';inp.readOnly=false;inp.classList.remove('run');wasC=false}
     updateOk();
     var ks=brute?ksOf(n):10000,secs=brute?n.secs:n.secs*0.2;
-    var rows=[['Режим',brute?'Перебір':'Словник'],['Безпека',n.sec],['Набір символів',CSN[n.cs]],['Простір ключів',brute?fnum(ks)+' комбінацій':'10 000 слів']];
-    if(started){rows.push(['Швидкість',fnum(ks/secs)+' H/s']);rows.push(['Перебрано',fnum(p*ks)]);rows.push(['Кандидат',n.cracked?n.password:cracking?inp.value:'—'])}
+    var rows=[['Mode',brute?'Brute force':'Dictionary'],['Security',n.sec],['Charset',CSN[n.cs]],['Keyspace',brute?fnum(ks)+' combinations':'10,000 words']];
+    if(started){rows.push(['Speed',fnum(ks/secs)+' H/s']);rows.push(['Tried',fnum(p*ks)]);rows.push(['Candidate',n.cracked?n.password:cracking?inp.value:'—'])}
     $('#term').innerHTML=rows.map(function(r){return '<div><span>'+r[0]+'</span><b>'+esc(r[1])+'</b></div>'}).join('');
     $('#pfill').style.width=(p*100)+'%';
-    $('#ptxt').textContent=n.cracked?'Пароль знайдено':lockLeft>0?'Блокування…':started?Math.floor(p*100)+'%':'Очікування';
-    $('#peta').textContent=n.cracked?'':started?'Залишилось ~'+Math.ceil((1-p)*secs)+' с':'Орієнтовно '+Math.round(secs)+' с';
+    $('#ptxt').textContent=n.cracked?'Password found':lockLeft>0?'Locked out…':started?Math.floor(p*100)+'%':'Waiting';
+    $('#peta').textContent=n.cracked?'':started?'About '+Math.ceil((1-p)*secs)+' s left':'About '+Math.round(secs)+' s';
     var ST=brute?STB:STD,stage=Math.min(ST.length-1,Math.floor(p*ST.length)),lg='',s2;
     if(started)for(s2=0;s2<=stage;s2++)lg+='<div>'+(s2<stage||n.cracked?'✓ ':'› ')+ST[s2]+(s2===stage&&!n.cracked?'…':'')+'</div>';
-    if(lockLeft>0)lg+='<div class="warn">⚠ Мережа блокує спроби (WPA3): '+Math.ceil(lockLeft)+' с</div>';
-    if(!brute&&n.dictDone&&!cracking)lg+='<div class="warn">✕ У словнику пароля немає. Спробуй перебір.</div>';
+    if(lockLeft>0)lg+='<div class="warn">⚠ Network is blocking attempts (WPA3): '+Math.ceil(lockLeft)+' s</div>';
+    if(!brute&&n.dictDone&&!cracking)lg+='<div class="warn">✕ Password not in dictionary. Try brute force.</div>';
     $('#plog').innerHTML=lg;
-    $('#mnote').textContent=brute?'Повний перебір усіх комбінацій: довго, але знаходить будь-який пароль.':'Швидка перевірка популярних паролів: спрацює лише на слабких мережах.';
+    $('#mnote').textContent=brute?'Tries every combination: slow, but finds any password.':'Quick check of popular passwords: only works on weak networks.';
     Array.prototype.forEach.call(document.querySelectorAll('#seg button'),function(b){
       b.classList.toggle('on',b.getAttribute('data-m')===mode);b.disabled=cracking||n.cracked;
     });
     var go=$('#go');
-    go.textContent=n.cracked?'Готово':cracking?'Зупинити':(!brute&&n.dictDone)?'Словник вичерпано':(p>0?'Продовжити':'Почати підбір');
+    go.textContent=n.cracked?'Done':cracking?'Stop':(!brute&&n.dictDone)?'Dictionary exhausted':(p>0?'Resume':'Start attack');
     go.disabled=n.cracked||(!brute&&n.dictDone&&!cracking);
     if(lastB!==battery){lastB=battery;renderStatus();renderSide()}
-    var m=battery<=0&&!n.cracked?'<div class="alert">Батарея розряджена. <button class="tool" id="chg" style="margin-left:6px">Підключити зарядку</button></div>':'';
+    var m=battery<=0&&!n.cracked?'<div class="alert">Battery is empty. <button class="tool" id="chg" style="margin-left:6px">Connect charger</button></div>':'';
     var msg=$('#msg');
     if(msg.getAttribute('data-s')!==m){
       msg.setAttribute('data-s',m);msg.innerHTML=m;
@@ -775,10 +775,10 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(j){
       var name=j.getAttribute('data-join');
       if(name===connected)return;
-      if(name==='sweet_home'){connect(name,'Підключено до домашньої мережі');return}
+      if(name==='sweet_home'){connect(name,'Connected to home network');return}
       var n=net(name);
-      if(n.open){n.cracked=true;connect(name,'Підключено до відкритої мережі «'+name+'»');return}
-      if(n.cracked){connect(name,'Підключено до «'+name+'»');return}
+      if(n.open){n.cracked=true;connect(name,'Connected to open network «'+name+'»');return}
+      if(n.cracked){connect(name,'Connected to «'+name+'»');return}
       openSheet(name);return;
     }
     if(t.closest('[data-back]')){view=null;renderPane();return}
@@ -787,37 +787,37 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var no=t.closest('[data-nopen]');
     if(no){noteOpen=+no.getAttribute('data-nopen');renderAll();return}
     if(t.closest('[data-nback]')){notes=notes.filter(function(x){return x.id!==noteOpen||x.text.trim()});noteOpen=null;renderAll();return}
-    if(t.closest('[data-ndel]')){alertBox('Delete Note?','Нотатку буде видалено.',[{t:'Cancel'},{t:'Delete',red:1,fn:function(){notes=notes.filter(function(x){return x.id!==noteOpen});noteOpen=null;renderAll()}}]);return}
-    if(t.closest('[data-signout]')){mail='';page='wifi';renderAll();toast('Ви вийшли з профілю. Прогрес збережено.','Settings');return}
+    if(t.closest('[data-ndel]')){alertBox('Delete Note?','This note will be deleted.',[{t:'Cancel'},{t:'Delete',red:1,fn:function(){notes=notes.filter(function(x){return x.id!==noteOpen});noteOpen=null;renderAll()}}]);return}
+    if(t.closest('[data-signout]')){mail='';page='wifi';renderAll();toast('Signed out. Progress saved.','Settings');return}
     if(t.closest('[data-acct]')){if(!mail){openAcct();return}page='account';view=null;gsub=null;renderAll();return}
     if(t.closest('[data-air]')){airplane=!airplane;toast(airplane?'Airplane Mode on':'Airplane Mode off','Airplane');renderAll();return}
-    if(t.closest('[data-wifi]')){if(airplane)toast('Спершу вимкни Airplane Mode','Airplane');else wifiOn=!wifiOn;renderAll();return}
-    if(t.closest('[data-bt]')){if(airplane)toast('Спершу вимкни Airplane Mode','Airplane');else btOn=!btOn;renderAll();return}
-    if(t.closest('[data-btdev]')){toast('CW-TWS2 поза зоною дії','Bluetooth');return}
+    if(t.closest('[data-wifi]')){if(airplane)toast('Turn off Airplane Mode first','Airplane');else wifiOn=!wifiOn;renderAll();return}
+    if(t.closest('[data-bt]')){if(airplane)toast('Turn off Airplane Mode first','Airplane');else btOn=!btOn;renderAll();return}
+    if(t.closest('[data-btdev]')){toast('CW-TWS2 is out of range','Bluetooth');return}
     if(t.closest('[data-tt]')){trueTone=!trueTone;applyDisplay();renderAll();return}
     if(t.closest('[data-ns]')){nightShift=!nightShift;applyDisplay();renderAll();toast(nightShift?'Night Shift on':'Night Shift off','Display');return}
     if(t.closest('[data-bold]')){boldTxt=!boldTxt;applyDisplay();renderAll();return}
     if(t.closest('[data-al]')){lockIdx=(lockIdx+1)%LOCKS.length;lastAct=Date.now();renderAll();return}
     if(t.closest('[data-lpm]')){lpm=!lpm;renderAll();toast(lpm?'Low Power Mode on':'Low Power Mode off','Battery');return}
     var gs=t.closest('[data-gsub]');
-    if(gs){var gk=gs.getAttribute('data-gsub');if(gk==='x')toast('Недоступно в грі','Settings');else{gsub=gk;renderPane()}return}
+    if(gs){var gk=gs.getAttribute('data-gsub');if(gk==='x')toast('Not available in the game','Settings');else{gsub=gk;renderPane()}return}
     if(t.closest('[data-gback]')){gsub=null;renderPane();return}
     var pgEl=t.closest('[data-page]');
     if(pgEl){page=pgEl.getAttribute('data-page');view=null;gsub=null;noteOpen=null;notes=notes.filter(function(x){return x.text.trim()});renderAll();return}
     if(t.closest('[data-chg]')){charging=!charging;if(charging)showCharge();else $('#chgscr').classList.remove('on');toast(charging?'Charger connected':'Charger disconnected','Battery');renderAll();return}
     if(t.closest('[data-auto]')){autoJoin[view]=autoJoin[view]===false;renderPane();return}
     if(t.closest('[data-pw]')){
-      var n2=net(view);if(n2&&n2.open){toast('Відкрита мережа без пароля','Wi-Fi');return}
+      var n2=net(view);if(n2&&n2.open){toast('Open network, no password','Wi-Fi');return}
       if(view==='sweet_home'||n2.cracked){reveal[view]=!reveal[view];renderPane()}
-      else toast('Пароль ще невідомий','Wi-Fi');
+      else toast('Password not known yet','Wi-Fi');
       return;
     }
     if(t.closest('[data-forget]')){
-      if(view==='sweet_home'){alertBox('Cannot Forget Network','«sweet_home» — це твоя домашня мережа.',[{t:'OK',b:1}]);return}
+      if(view==='sweet_home'){alertBox('Cannot Forget Network','“sweet_home” is your home network.',[{t:'OK',b:1}]);return}
       var fv=view;
       alertBox('Forget Wi-Fi Network “'+fv+'”?','Your iPad will no longer join this Wi-Fi network.',[{t:'Cancel'},{t:'Forget',red:1,fn:function(){
         var n3=net(fv);n3.cracked=false;n3.prog=0;n3.dictDone=false;if(connected===fv)connected='sweet_home';
-        view=null;renderAll();toast('Мережу забуто','Wi-Fi');
+        view=null;renderAll();toast('Network forgotten','Wi-Fi');
       }}]);
     }
   });
@@ -858,9 +858,9 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var d=document.documentElement;
     try{
       if(fsEl()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
-      else if(d.requestFullscreen||d.webkitRequestFullscreen){var r=(d.requestFullscreen||d.webkitRequestFullscreen).call(d);if(r&&r.catch)r.catch(function(){toast('Safari не дозволив повний екран. Спробуй: Share → Add to Home Screen.','Settings')})}
-      else toast('Цей браузер не підтримує повний екран. Спробуй: Share → Add to Home Screen.','Settings');
-    }catch(err){toast('Повний екран недоступний тут. Спробуй: Share → Add to Home Screen.','Settings')}
+      else if(d.requestFullscreen||d.webkitRequestFullscreen){var r=(d.requestFullscreen||d.webkitRequestFullscreen).call(d);if(r&&r.catch)r.catch(function(){toast('Safari did not allow full screen. Try: Share → Add to Home Screen.','Settings')})}
+      else toast('This browser does not support full screen. Try: Share → Add to Home Screen.','Settings');
+    }catch(err){toast('Full screen is not available here. Try: Share → Add to Home Screen.','Settings')}
   });
   load();applyDisplay();renderAll();
   window.addEventListener('pagehide',save);
