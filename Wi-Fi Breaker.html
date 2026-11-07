@@ -815,7 +815,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
 
   /* ---------- Terminal app ---------- */
   var term={lines:[]},tJob=null,tTimer=null;
-  var T_HELP=['Commands:','  help                       show this list','  scan                       list nearby networks','  status                     battery, connection, progress','  attack <ssid> [dict|brute] start an attack (default: brute)','  stop                       stop the running attack','  connect <ssid> [password]  join a network','  clear                      clear the screen','','Network names can contain spaces. Partial names work.'];
+  var T_HELP=['Commands:','  help                       show this list','  scan                       list nearby networks','  status                     battery, connection, progress','  attack <ssid> [dict|brute] start an attack (default: brute)','  stop                       stop the running attack','  connect <ssid> [password]  join a network','  clear                      clear the screen','','You can use / instead of spaces: attack/osvitla/academy/dict','Partial names work.'];
   function tLog(t,cls){
     term.lines.push({t:t,c:cls||''});if(term.lines.length>300)term.lines.shift();
     var o=$('#tout');
@@ -850,7 +850,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   function tRun(line){
     line=line.trim();tLog('$ '+line,'cmd');
     if(!line)return;
-    var tk=line.split(/\s+/),cmd=tk[0].toLowerCase(),args=tk.slice(1),m;
+    var tk=line.split(/[\s\/]+/).filter(Boolean),cmd=tk[0].toLowerCase(),args=tk.slice(1),m;
     if(cmd==='help'){T_HELP.forEach(function(t){tLog(t)});return}
     if(cmd==='clear'){term.lines=[];var o=$('#tout');if(o)o.innerHTML='';return}
     if(cmd==='whoami'){tLog(acct);return}
