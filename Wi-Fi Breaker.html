@@ -1,0 +1,670 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Wi-Fi Breaker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: iPad Settings clone. Sidebar left, Wi-Fi pane right, "Join" sheet is the game. Single dark look on purpose, to match the real device. */
+:root{
+  --bg:#000000;
+  --side:#0c0e11;
+  --card:#1c1c1e;
+  --field:#2c2c2e;
+  --sep:#38383a;
+  --fg:#ffffff;
+  --dim:#8e8e93;
+  --blue:#0a84ff;
+  --green:#30d158;
+  --orange:#ff9f0a;
+  --red:#ff453a;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:17px;-webkit-font-smoothing:antialiased;overflow:hidden;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,.row:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.app{display:flex;height:100%;gap:0;min-width:0}
+.status{position:absolute;left:0;right:0;top:0;height:30px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:13px;font-weight:600;pointer-events:none;z-index:2}
+.status .r{display:flex;gap:8px;align-items:center}
+.batt{background:#fff;color:#000;border-radius:7px;padding:0 6px;font-size:12px;font-weight:700;line-height:17px;min-width:30px;text-align:center}
+.batt.low{background:var(--red);color:#fff}
+
+/* sidebar */
+.side{width:272px;flex:none;background:var(--side);padding:56px 14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-left:max(14px,env(safe-area-inset-left,0px))}
+.search{display:flex;align-items:center;gap:8px;background:#1b1d21;border-radius:22px;padding:11px 14px;color:var(--dim);font-size:16px;margin-bottom:8px}
+.me{display:flex;gap:12px;align-items:center;padding:10px 4px}
+.av{width:52px;height:52px;border-radius:50%;flex:none;background:conic-gradient(from 200deg,#0a84ff,#30d158,#ff9f0a,#0a84ff);display:grid;place-items:center;font-weight:700;font-size:20px}
+.me b{display:block;font-size:17px}.me small{color:var(--dim);font-size:13px;line-height:1.25;display:block}
+.sitem{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:22px;font-size:16px;text-align:left;width:100%}
+.sitem.on{background:#1e2025}
+.sitem>span:nth-child(2){white-space:nowrap}
+.sitem .v{flex:none}
+.sitem .v{margin-left:auto;color:var(--dim);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.ico{width:32px;height:32px;border-radius:8px;flex:none;display:grid;place-items:center}
+.ico svg{width:20px;height:20px}
+.gap{height:10px}
+
+/* main */
+.main{flex:1;min-width:0;overflow-y:auto;padding:56px 18px 40px;position:relative}
+.wrap{max-width:900px;margin:0 auto}
+.card{background:var(--card);border-radius:28px;padding:6px 18px;margin-bottom:22px}
+.hero{padding:18px 0 4px}
+.hero .big{width:60px;height:60px;border-radius:15px;background:linear-gradient(#2a9bff,#0a6fe8);display:grid;place-items:center}
+.hero h1{font-size:25px;margin:16px 0 6px}
+.hero p{color:var(--dim);margin:0 0 14px;line-height:1.35;font-size:16px;max-width:62ch}
+.row{display:flex;align-items:center;gap:12px;min-height:54px;border-top:1px solid var(--sep);padding-left:0}
+.row:first-child{border-top:0}
+.row.pad{padding-left:44px}
+.row .name{flex:1;min-width:0;overflow-wrap:anywhere}
+.row .tick{position:absolute;margin-left:2px;color:var(--blue);width:28px}
+.row.click{cursor:pointer}
+.hd{color:var(--dim);font-weight:600;font-size:17px;margin:6px 8px 10px}
+.ic{display:flex;gap:12px;align-items:center;color:#fff}
+.ic svg{display:block}
+.info{width:28px;height:28px;border-radius:50%;border:2px solid var(--blue);color:var(--blue);display:grid;place-items:center;font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:16px;line-height:1}
+.sw{width:51px;height:31px;border-radius:16px;background:#39393d;position:relative;flex:none;transition:background .2s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.sw.on{background:var(--green)}.sw.on::after{transform:translateX(20px)}
+.score{display:inline-flex;gap:8px;align-items:center;background:var(--card);border-radius:20px;padding:8px 14px;font-size:14px;color:var(--dim);margin-bottom:18px}
+.score b{color:var(--fg);font-variant-numeric:tabular-nums}
+.win{background:linear-gradient(#0f2a1a,#13301e);border:1px solid #1d5a35;border-radius:24px;padding:18px;margin-bottom:22px}
+.win h3{margin:0 0 6px;font-size:19px;color:var(--green)}.win p{margin:0 0 12px;color:#b5d9c2;line-height:1.4}
+.btn{background:var(--blue);color:#fff;border-radius:22px;padding:10px 18px;font-weight:600;font-size:16px}
+.btn.ghost{background:var(--field);color:var(--blue)}
+
+.spin{display:block;width:18px;height:18px;margin:3px;border:2px solid #4a4a4e;border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+button.me{width:100%;text-align:left;border-radius:22px;padding:10px 8px}
+button.me:hover{background:#15171b}
+.pw.txt{font-family:var(--font);letter-spacing:0;font-size:18px}
+.sheet .btn.ghost{flex:1}
+.batt.chg{background:var(--green);color:#000;display:flex;gap:2px;align-items:center;justify-content:center}
+.bigpct{font-size:46px;font-weight:700;letter-spacing:-.02em;line-height:1.1}.bigpct small{font-size:22px;color:var(--dim)}
+.bar{height:14px;border-radius:7px;background:#3a3a3d;overflow:hidden}.bar i{display:block;height:100%;background:#8e8e93;border-radius:7px;transition:width .6s}.bar.chg i{background:var(--green)}
+.bars{display:flex;align-items:flex-end;gap:clamp(8px,3vw,26px);height:160px;padding:0 6px;border-bottom:1px solid var(--sep)}
+.bars div{flex:0 0 clamp(18px,4vw,36px);background:#4b4b4f;border-radius:6px 6px 3px 3px;transition:height .5s}
+.bars div.now{background:var(--blue)}
+.dl{display:flex;gap:clamp(8px,3vw,26px);padding:6px;font-size:13px;color:var(--dim)}.dl span{flex:0 0 clamp(18px,4vw,36px);text-align:center}
+.stat{display:flex;gap:28px;margin:14px 0 16px}.stat small{display:block;color:var(--dim);font-size:15px}.stat b{font-size:32px;font-weight:600}.stat b i{font-size:18px;font-style:normal;color:var(--dim)}
+.appico{width:34px;height:34px;border-radius:8px;flex:none;display:grid;place-items:center}
+.sitem[data-page]{cursor:pointer}
+.pw{min-height:58px;font-size:20px}
+.pw .ph{font-family:var(--font);letter-spacing:0;color:#d0d0d4}
+.pw .lk{color:var(--fg)}.pw .sc{color:#5f5f64}
+.plog{min-height:100px;font-family:var(--mono);font-size:13px;line-height:1.55;color:var(--dim);margin:10px 6px 0}
+.chgscr{position:fixed;inset:0;background:#000;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0;pointer-events:none;transition:opacity .7s}
+.chgscr.on{opacity:1;pointer-events:auto;cursor:pointer}
+.chgscr .pct{font-size:22px;color:#8e8e93;font-variant-numeric:tabular-nums}
+.me.on{background:#1e2025}
+.hero .big svg:not([width]){width:34px;height:34px}
+.pl{display:block;width:15px;height:15px}.pl svg{width:100%;height:100%}
+/* detail */
+.top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.round{width:46px;height:46px;border-radius:50%;background:#1c1c1e;display:grid;place-items:center;flex:none;box-shadow:0 0 0 1px #2b2b2e}
+.top h2{flex:1;text-align:center;font-size:17px;margin:0;padding-right:46px}
+.link{color:var(--blue)}
+.cap{color:var(--dim);font-size:13px;line-height:1.4;margin:-10px 8px 22px}
+.val{margin-left:auto;color:var(--dim);font-variant-numeric:tabular-nums;font-family:var(--font)}
+.mono{font-family:var(--mono);letter-spacing:.08em}
+
+/* sheet */
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:10;animation:fade .2s}
+.sheet{background:#1c1c1e;width:min(490px,100%);max-height:100%;overflow-y:auto;border-radius:34px;padding:16px 26px 28px;position:relative;animation:rise .28s cubic-bezier(.2,.9,.3,1)}
+@keyframes fade{from{opacity:0}}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.sh-top{display:flex;justify-content:space-between;margin:0 -12px}
+.sh-top .round{background:#2c2c2e;width:44px;height:44px;box-shadow:none}
+.sh-top .round.ok{color:#6a6a6e}.sh-top .round.ok.ready{background:var(--blue);color:#fff}
+.sh-wifi{display:flex;justify-content:center;margin:-8px 0 26px}
+.sheet h3{margin:0;font-size:22px}
+.sheet .sub{color:var(--dim);font-size:19px;margin:2px 0 22px}
+.pw{width:100%;background:var(--field);border:0;border-radius:28px;padding:15px 22px;color:#fff;font-size:19px;font-family:var(--mono);letter-spacing:.25em}
+.pw::placeholder{font-family:var(--font);letter-spacing:0;color:#d0d0d4}
+.note{color:var(--dim);font-size:14px;line-height:1.4;margin:12px 6px 0}
+.pw.shake{animation:shake .35s}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.hint{display:flex;justify-content:space-between;align-items:center;margin:16px 6px 6px;font-size:14px;color:var(--dim)}
+.pattern{font-family:var(--mono);letter-spacing:.35em;color:var(--fg);font-size:18px}
+.tool{background:var(--field);color:var(--blue);border-radius:18px;padding:7px 12px;font-size:14px;font-weight:600}
+.tool:disabled{opacity:.4;cursor:default}
+.hist{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:210px;overflow-y:auto}
+.g{display:flex;align-items:center;justify-content:space-between;background:#232326;border-radius:16px;padding:8px 14px}
+.g .n{font-family:var(--mono);letter-spacing:.3em;font-size:18px}
+.g .dots{display:flex;gap:5px}
+.d{width:12px;height:12px;border-radius:50%;background:#3a3a3d}
+.d.gr{background:var(--green)}.d.or{background:var(--orange)}
+.legend{display:flex;gap:14px;margin:12px 6px 0;font-size:12px;color:var(--dim);flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.alert{background:#3a1d1b;color:#ffb4ae;border-radius:16px;padding:12px 14px;margin-top:14px;font-size:14px;line-height:1.4}
+.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:#3a3a3c;padding:12px 20px;border-radius:24px;opacity:0;pointer-events:none;transition:.25s;z-index:20;font-size:15px;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:760px){
+  .side{display:none}
+  .main{padding:44px 0 40px}
+  .card{padding:4px 14px}
+  .row.pad{padding-left:34px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <div class="status"><span id="clock"></span><span class="r"><span id="wf"></span><span class="batt" id="batt">34</span></span></div>
+  <aside class="side" id="side"></aside>
+  <main class="main"><div class="wrap" id="pane"></div></main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="chgscr" id="chgscr" aria-hidden="true">
+  <svg width="132" height="68" viewBox="0 0 110 56" fill="none"><rect x="2" y="2" width="94" height="52" rx="15" stroke="#fff" stroke-width="3.5"/><rect x="100" y="18" width="7" height="20" rx="3" fill="#fff"/><rect id="cfill" x="8" y="8" width="40" height="40" rx="10" fill="#30d158"/></svg>
+  <div class="pct" id="cpct"></div><div class="pct" style="font-size:14px">Заряджається</div>
+</div>
+<div id="sheetHost"></div>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)};
+  var ICON={
+    lock:'<svg width="15" height="20" viewBox="0 0 15 20" fill="#fff"><path d="M7.5 0A4.5 4.5 0 0 0 3 4.5V7H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1V4.5A4.5 4.5 0 0 0 7.5 0Zm0 2A2.5 2.5 0 0 1 10 4.5V7H5V4.5A2.5 2.5 0 0 1 7.5 2Z"/></svg>',
+    check:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l5.5 5.5L19 5"/></svg>',
+    x:'<svg width="22" height="22" viewBox="0 0 22 22" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M4 4l14 14M18 4L4 18"/></svg>',
+    back:'<svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg>'
+  };
+  function wifi(level,size,color){
+    size=size||22;color=color||'#fff';
+    var o=function(n){return level>=n?1:.35};
+    return '<svg width="'+size+'" height="'+size*0.76+'" viewBox="0 0 22 17" fill="none" stroke="'+color+'" stroke-width="2.4" stroke-linecap="round">'+
+      '<path opacity="'+o(3)+'" d="M1.8 5.6a13.5 13.5 0 0 1 18.4 0"/>'+
+      '<path opacity="'+o(2)+'" d="M5.1 9.2a8.8 8.8 0 0 1 11.8 0"/>'+
+      '<path opacity="'+o(1)+'" d="M8.2 12.5a4.4 4.4 0 0 1 5.6 0"/>'+
+      '<circle cx="11" cy="15" r="1.2" fill="'+color+'" stroke="none"/></svg>';
+  }
+  function bigWifi(){
+    return '<svg width="82" height="66" viewBox="0 0 82 66" fill="none" stroke-linecap="round"><path d="M6 24C26 6 56 6 76 24" stroke="#1e90ff" stroke-width="11"/><path d="M20 38C32 28 50 28 62 38" stroke="#1e90ff" stroke-width="11"/><path d="M41 62l-9-10c5-4 13-4 18 0z" fill="#1e90ff" stroke="#1e90ff" stroke-width="5" stroke-linejoin="round"/></svg>';
+  }
+  function sIco(bg,svg){return '<span class="ico" style="background:'+bg+'">'+svg+'</span>'}
+  var S={
+    plane:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>',
+    bt:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg>',
+    cell:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="11" r="2"/><path d="M12 13v7M7.5 6.5a6 6 0 0 0 0 9M16.5 6.5a6 6 0 0 1 0 9"/></svg>',
+    hot:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 1 0-5l2-2a4 4 0 0 1 5.5 0M14 10a4 4 0 0 1 0 5l-2 2a4 4 0 0 1-5.5 0"/></svg>',
+    bat:'<svg viewBox="0 0 24 24" fill="#fff"><rect x="2" y="8" width="18" height="9" rx="3"/><rect x="21" y="11" width="2" height="3" rx="1"/></svg>',
+    gen:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="9"/></svg>',
+    acc:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="8" r="1" fill="#fff"/><path d="M7.5 10.5h9M12 11v4M10 19l2-4 2 4"/></svg>',
+    app:'<svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg>',
+    pen:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 19l1-4L17 4l3 3L9 18z"/></svg>'
+  };
+
+  /* ---------- game state ---------- */
+  var DEFS=[
+    {name:'Euphoria',len:4,signal:3,secs:8},
+    {name:'Euphoria1',len:4,signal:2,secs:12},
+    {name:'k35',len:5,signal:3,secs:18},
+    {name:'TANY',len:5,signal:2,secs:25},
+    {name:'TP-Link_254E',len:6,signal:2,secs:40}
+  ];
+  var nets,connected,battery,view,autoJoin,reveal,joining;
+  var page='wifi',charging=false,spent=0,t0=Date.now(),lastCharge=null;
+  var airplane=false,wifiOn=true,btOn=true,gsub=null;
+
+  function rndPw(len){var s='';for(var i=0;i<len;i++)s+=Math.floor(Math.random()*10);return s}
+  function resetNet(n){n.password=rndPw(n.len);n.prog=0;n.cracked=false}
+  var acct=null,mem={};
+  var PERSON='<svg width="30" height="30" viewBox="0 0 30 30" fill="#8e8e93"><circle cx="15" cy="11" r="5.5"/><path d="M4 27c1-6 6-9 11-9s10 3 11 9z"/></svg>';
+  function ls(k,v,del){
+    try{
+      if(del){localStorage.removeItem(k);delete mem[k];return null}
+      if(v===undefined){var r=localStorage.getItem(k);return r===null?(k in mem?mem[k]:null):JSON.parse(r)}
+      localStorage.setItem(k,JSON.stringify(v));
+    }catch(e){
+      if(del){delete mem[k];return null}
+      if(v===undefined)return k in mem?mem[k]:null;
+      mem[k]=v;
+    }
+    return null;
+  }
+  function hs(s){var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return String(h>>>0)}
+  function save(){
+    if(!acct||!nets)return;
+    ls('wb_save_'+acct,{connected:connected,battery:battery,nets:nets.map(function(n){return {name:n.name,password:n.password,prog:n.prog,cracked:n.cracked}})});
+  }
+  function load(name){
+    newGame();
+    var d=ls('wb_save_'+name);
+    if(!d||!d.nets)return;
+    d.nets.forEach(function(s){
+      var n=net(s.name);
+      if(n&&typeof s.password==='string'&&s.password.length===n.len){n.password=s.password;n.prog=s.prog||0;n.cracked=!!s.cracked}
+    });
+    connected=d.connected||'sweet_home';
+    battery=typeof d.battery==='number'?d.battery:34;
+  }
+  function autoLogin(){
+    var c=ls('wb_cur'),users=ls('wb_users')||{};
+    if(c&&users[c]){acct=c;load(c)}
+    window.addEventListener('pagehide',save);
+    renderAll();
+  }
+  function meHtml(){
+    if(!acct)return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av" style="background:#2c2c2e">'+PERSON+'</div><div><b>Sign in</b><small>Увійди в ігровий акаунт, щоб зберігати прогрес</small></div></button>';
+    return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av">'+acct.slice(0,2).toUpperCase()+'</div><div><b>'+acct+'</b><small>Ігровий акаунт · зламано '+cracked()+'/'+nets.length+'</small></div></button>';
+  }
+  function openAcct(){
+    var host=$('#sheetHost'),mode='in';
+    function bind(){
+      $('#sx').onclick=closeSheet;
+      $('#dim').addEventListener('mousedown',function(e){if(e.target.id==='dim')closeSheet()});
+    }
+    function drawOut(){
+      var up=mode==='up';
+      host.innerHTML='<div class="dim" id="dim"><div class="sheet" id="acct" role="dialog" aria-label="Sign in">'+
+        '<div class="sh-top"><button class="round" id="sx" aria-label="Close">'+ICON.x+'</button><button class="round ok ready" id="aok" aria-label="Continue">'+ICON.check+'</button></div>'+
+        '<div class="sh-wifi"><div class="av" style="width:84px;height:84px;background:#2c2c2e">'+PERSON.replace('width="30" height="30"','width="54" height="54"')+'</div></div>'+
+        '<h3>'+(up?'Create Account':'Sign In')+'</h3><div class="sub">'+(up?'Створи ігровий акаунт для збереження прогресу.':'Увійди в ігровий акаунт, щоб продовжити гру.')+'</div>'+
+        '<input class="pw txt" id="an" type="text" placeholder="Nickname" maxlength="16" autocomplete="off" aria-label="Nickname">'+
+        '<input class="pw txt" id="ap" type="password" placeholder="Password" autocomplete="off" aria-label="Password" style="margin-top:10px">'+
+        '<div class="note">Це локальний ігровий акаунт. Дані зберігаються тільки в цьому браузері й нікуди не надсилаються. Не вводь справжні паролі.</div>'+
+        '<div id="amsg"></div>'+
+        '<div style="margin-top:18px"><button class="tool" id="amode">'+(up?'У мене вже є акаунт':'Create New Account')+'</button></div></div></div>';
+      bind();
+      $('#aok').onclick=submitAcct;
+      $('#amode').onclick=function(){mode=up?'in':'up';drawOut()};
+      ['#an','#ap'].forEach(function(s){$(s).addEventListener('keydown',function(e){if(e.key==='Enter')submitAcct()})});
+      setTimeout(function(){$('#an').focus()},50);
+    }
+    function submitAcct(){
+      var nm=$('#an').value.trim(),pw=$('#ap').value,msg=$('#amsg');
+      function err(t){msg.innerHTML='<div class="alert">'+t+'</div>'}
+      if(!/^[\wЀ-ӿ-]{2,16}$/.test(nm))return err('Нікнейм: 2–16 символів, літери, цифри, _ або -.');
+      if(pw.length<3)return err('Пароль має містити щонайменше 3 символи.');
+      var users=ls('wb_users')||{};
+      if(mode==='in'){
+        if(!users[nm]||users[nm]!==hs(nm+pw))return err('Невірний нікнейм або пароль.');
+      }else{
+        if(users[nm])return err('Такий нікнейм уже існує.');
+        users[nm]=hs(nm+pw);ls('wb_users',users);
+      }
+      acct=nm;ls('wb_cur',nm);
+      if(mode==='in')load(nm);else newGame();
+      closeSheet();
+      toast(mode==='in'?'З поверненням, '+nm:'Акаунт створено. Прогрес зберігається.');
+    }
+    if(acct){
+      host.innerHTML='<div class="dim" id="dim"><div class="sheet" id="acct" role="dialog" aria-label="Account">'+
+        '<div class="sh-top"><button class="round" id="sx" aria-label="Close">'+ICON.x+'</button><span></span></div>'+
+        '<div class="sh-wifi"><div class="av" style="width:84px;height:84px;font-size:32px">'+acct.slice(0,2).toUpperCase()+'</div></div>'+
+        '<h3>'+acct+'</h3><div class="sub">Ігровий акаунт</div>'+
+        '<div style="background:#2c2c2e;border-radius:22px;padding:4px 16px;margin-bottom:16px"><div class="row"><span class="name">Зламано мереж</span><span class="val">'+cracked()+' / '+nets.length+'</span></div><div class="row"><span class="name">Підключено до</span><span class="val">'+connected+'</span></div><div class="row"><span class="name">Батарея</span><span class="val">'+battery+'%</span></div></div>'+
+        '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="ars">Reset Progress</button><button class="btn ghost" id="aso" style="color:var(--red)">Sign Out</button></div></div></div>';
+      bind();
+      $('#ars').onclick=function(){newGame();closeSheet();toast('Прогрес скинуто')};
+      $('#aso').onclick=function(){save();acct=null;ls('wb_cur',null,true);newGame();closeSheet();toast('Ви вийшли з акаунта')};
+    }else drawOut();
+  }
+  function newGame(){
+    nets=DEFS.map(function(d){var n={name:d.name,len:d.len,signal:d.signal,secs:d.secs};resetNet(n);return n});
+    connected='sweet_home';battery=34;view=null;autoJoin={};reveal={};
+  }
+  function net(name){return nets.filter(function(n){return n.name===name})[0]}
+  function cracked(){return nets.filter(function(n){return n.cracked}).length}
+  function connect(name,msg){
+    joining=name;renderAll();
+    setTimeout(function(){joining=null;connected=name;renderAll();toast(msg)},1100);
+  }
+
+  /* ---------- evaluate guess (Mastermind) ---------- */
+  function evaluate(secret,guess){
+    var gr=0,left={},gl=[];
+    for(var i=0;i<secret.length;i++){
+      if(secret[i]===guess[i])gr++;
+      else{left[secret[i]]=(left[secret[i]]||0)+1;gl.push(guess[i])}
+    }
+    var or=0;
+    gl.forEach(function(c){if(left[c]>0){or++;left[c]--}});
+    return {gr:gr,or:or};
+  }
+
+  /* ---------- rendering ---------- */
+  function toast(msg){
+    var t=$('#toast');t.textContent=msg;t.classList.add('show');
+    clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show')},2600);
+  }
+  function renderStatus(){
+    var d=new Date();
+    var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    $('#clock').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'  '+days[d.getDay()]+' '+d.getDate()+' '+mo[d.getMonth()];
+    $('#wf').innerHTML=airplane?'<span class="pl">'+S.plane+'</span>':(wifiOn?wifi(3,17):'');
+    var b=$('#batt');
+    b.innerHTML=(charging?'<svg width="8" height="12" viewBox="0 0 8 12" fill="#000"><path d="M5 0L0 7h3l-1 5 6-7H4z"/></svg>':'')+battery;
+    b.className='batt'+(charging?' chg':battery<=10?' low':'');
+  }
+  function renderSide(){
+    var wfv=(airplane||!wifiOn)?'Off':connected;
+    var items=[
+      ['#ff9500',S.plane,'Airplane Mode','sw'],
+      ['#0a84ff',null,'Wi-Fi',wfv],
+      ['#0a84ff',S.bt,'Bluetooth',(btOn&&!airplane)?'On':'Off'],
+      ['#30d158',S.cell,'Mobile Service','Off'],
+      ['#1f7a3b',S.hot,'Personal Hotspot','Off'],
+      ['#30d158',S.bat,'Battery',charging?'Charging':battery+'%'],
+      null,
+      ['#8e8e93',S.gen,'General',''],
+      ['#0a84ff',S.acc,'Accessibility',''],
+      ['#111',S.app,'Appearance',''],
+      ['#8e8e93',S.pen,'Apple Pencil','']
+    ];
+    var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general'};
+    var h='<div class="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M12 12l5 5"/></svg>Search</div>'+
+      meHtml()+'<div class="gap"></div>';
+    items.forEach(function(it){
+      if(!it){h+='<div class="gap"></div>';return}
+      var icon=it[1]===null?wifi(3,20):it[1];
+      var val=it[3];
+      if(val==='sw')val='<button class="sw'+(airplane?' on':'')+'" data-air aria-label="Airplane Mode" style="transform:scale(.8);transform-origin:right"></button>';
+      var pg=PG[it[2]]||'';var on=pg&&pg===page;
+      h+='<div class="sitem'+(on?' on':'')+'"'+(pg?' data-page="'+pg+'" tabindex="0"':'')+'>'+sIco(it[0],icon)+'<span>'+it[2]+'</span><span class="v">'+val+'</span></div>';
+    });
+    $('#side').innerHTML=h;
+  }
+  var CHEV='<svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="#6b6b70" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l6 6-6 6"/></svg>';
+  function ig(d){return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="'+d+'"/></svg>'}
+  function grow(bg,svg,label,key,val){
+    return '<div class="row click" tabindex="0" data-gsub="'+key+'"><span class="ico" style="background:'+bg+'">'+svg+'</span><span class="name">'+label+'</span>'+(val?'<span class="val">'+val+'</span>':'')+CHEV+'</div>';
+  }
+  function renderBluetooth(p){
+    var on=btOn&&!airplane;
+    var h='<div class="card"><div class="hero"><div class="big">'+S.bt+'</div><h1>Bluetooth</h1>'+
+      '<p>Connect to accessories you can use for activities such as streaming music, making phone calls and gaming. <span class="link">Learn more…</span></p></div>'+
+      '<div class="row"><span class="name">Bluetooth</span><button class="sw'+(on?' on':'')+'" data-bt aria-label="Bluetooth"></button></div></div>';
+    if(on){
+      h+='<div class="cap" style="margin-top:-12px">This iPad is discoverable as “iPad (9)” while Bluetooth Settings is open.</div>'+
+        '<div class="hd">My Devices</div><div class="card"><div class="row click" tabindex="0" data-btdev><span class="name">CW-TWS2</span><span class="val">Not Connected</span><button class="info" data-btdev aria-label="Info">i</button></div></div>'+
+        '<div class="hd" style="display:flex;gap:10px;align-items:center;margin-top:30px">Other Devices <i class="spin" style="width:16px;height:16px;margin:0"></i></div>';
+    }else if(airplane){
+      h+='<div class="cap" style="margin-top:-12px">Режим польоту вимкнув Bluetooth.</div>';
+    }
+    p.innerHTML=h;
+  }
+  function renderGeneral(p){
+    if(gsub){renderGeneralSub(p);return}
+    var h='<div class="card"><div class="hero"><div class="big" style="background:linear-gradient(#a4a4a9,#6f6f74)">'+S.gen+'</div><h1>General</h1>'+
+      '<p>Manage your overall setup and preferences for iPad, such as software updates, device language, AirDrop and more.</p></div></div>'+
+      '<div class="card">'+
+        grow('#8e8e93',ig('M7 3h10a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM11 18h2'),'About','about')+
+        grow('#8e8e93',S.gen,'Software Update','update')+
+        grow('#8e8e93',ig('M4 14h16v5H4zM6 10l2-5h8l2 5M16 16.5h.01'),'iPad Storage','storage')+
+      '</div>'+
+      '<div class="card">'+grow('#8e8e93',ig('M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z'),'Warranty &amp; Coverage','x')+'</div>'+
+      '<div class="card">'+
+        grow('#0a84ff',ig('M12 12m-1.5 0a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0M8 12a4 4 0 0 1 8 0M5 12a7 7 0 0 1 14 0'),'AirDrop','x')+
+        grow('#0a84ff',ig('M4 6h16v10H4zM9 20l3-4 3 4z'),'AirPlay &amp; Continuity','x')+
+      '</div>';
+    p.innerHTML=h;
+  }
+  function renderGeneralSub(p){
+    var titles={about:'About',update:'Software Update',storage:'iPad Storage'};
+    var h='<div class="top"><button class="round" data-gback aria-label="Back">'+ICON.back+'</button><h2>'+titles[gsub]+'</h2></div>';
+    if(gsub==='about'){
+      var mins=Math.max(1,Math.round((Date.now()-t0)/60000));
+      h+='<div class="card"><div class="row"><span class="name">Name</span><span class="val">iPad (9)</span></div>'+
+        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.0</span></div>'+
+        '<div class="row"><span class="name">Model Name</span><span class="val">Game Pad</span></div></div>'+
+        '<div class="card"><div class="row"><span class="name">Networks</span><span class="val">'+nets.length+'</span></div>'+
+        '<div class="row"><span class="name">Cracked</span><span class="val">'+cracked()+'</span></div>'+
+        '<div class="row"><span class="name">Battery</span><span class="val">'+battery+'%</span></div>'+
+        '<div class="row"><span class="name">Session</span><span class="val">'+mins+' min</span></div></div>';
+    }else if(gsub==='update'){
+      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.0</div>'+
+        '<div style="color:var(--dim);margin-top:8px;font-size:16px">Your software is up to date.</div></div>'+
+        '<div class="card"><div class="row"><span class="name">Automatic Updates</span><span class="val">On</span></div></div>';
+    }else{
+      var kb=40;
+      h+='<div class="card" style="padding:16px 18px 20px"><div style="font-size:15px;color:var(--dim)">iPad</div><div class="bigpct" style="font-size:34px">'+kb+' KB <small style="font-size:18px">of 64 GB used</small></div>'+
+        '<div class="bar" style="margin-top:12px"><i style="width:2%;background:var(--blue)"></i></div></div>'+
+        '<div class="card"><div class="row"><span class="appico" style="background:linear-gradient(#2a9bff,#0a6fe8)">'+wifi(3,20)+'</span><span class="name">Wi-Fi Breaker</span><span class="val">'+kb+' KB</span></div></div>';
+    }
+    p.innerHTML=h;
+  }
+  function renderAccount(p){
+    var done=cracked(),ini=acct.slice(0,2).toUpperCase();
+    var mins=Math.max(1,Math.round((Date.now()-t0)/60000));
+    var h='<div style="text-align:center;font-weight:600;margin:-18px 0 22px">Player Account</div>'+
+      '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:34px">'+
+      '<div class="av" style="width:150px;height:150px;font-size:56px">'+ini+'</div>'+
+      '<div style="font-size:34px;font-weight:700;margin-top:12px;overflow-wrap:anywhere;text-align:center">'+acct+'</div>'+
+      '<div style="color:var(--dim);font-size:20px">Ігровий акаунт</div></div>'+
+      '<div class="card">'+
+        grow('#8e8e93',ig('M4 6h16v12H4zM8 11a1.5 1.5 0 1 0 0 .01M13 10h4M13 14h4'),'Player Information','x')+
+        grow('#8e8e93',ig('M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z'),'Sign-In &amp; Security','x')+
+        grow('#8e8e93',ig('M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3M12 13v4M8 20h8'),'Achievements','x')+
+        grow('#8e8e93',ig('M12 7v5l3 2M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0'),'Play History','x')+
+      '</div>'+
+      '<div class="card">'+
+        grow('#0a84ff',wifi(3,20),'Cracked Networks','x',done+' / '+nets.length)+
+        grow('#0a84ff',wifi(3,20),'Connected to','x',(airplane||!wifiOn)?'Off':connected)+
+        grow('#30d158',S.bat,'Battery','x',battery+'%')+
+        grow('#8e8e93',ig('M12 7v5l3 2M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0'),'Session','x',mins+' min')+
+      '</div>'+
+      '<div class="card"><div class="row click" tabindex="0" data-reset><span class="link">Reset Progress</span></div>'+
+      '<div class="row click" tabindex="0" data-signout><span style="color:var(--red)">Sign Out</span></div></div>';
+    p.innerHTML=h;
+  }
+  function netRow(n){
+    var isC=connected===n.name,isJ=joining===n.name;
+    var lead=isC?'<span class="tick">'+ICON.check+'</span>':isJ?'<span class="tick"><i class="spin"></i></span>':'';
+    return '<div class="row click '+(lead?'':'pad')+'" tabindex="0" data-join="'+n.name+'">'+
+      (lead?lead+'<span style="width:32px"></span>':'')+
+      '<span class="name">'+n.name+'</span><span class="ic">'+ICON.lock+wifi(n.signal,22)+
+      '<button class="info" data-info="'+n.name+'" aria-label="Details '+n.name+'">i</button></span></div>';
+  }
+  function renderPane(){
+    var p=$('#pane');
+    if(page==='battery'){renderBattery(p);return}
+    if(page==='bluetooth'){renderBluetooth(p);return}
+    if(page==='general'){renderGeneral(p);return}
+    if(page==='account'&&acct){renderAccount(p);return}
+    if(view){renderDetail(p);return}
+    var all=cracked()===nets.length;
+    var everyone=[{name:'sweet_home',signal:3}].concat(nets);
+    var cn=everyone.filter(function(n){return n.name===connected})[0];
+    var h='<div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(acct?acct:'Sign in')+'</button></div>';
+    if(all)h+='<div class="win"><h3>Усі мережі зламано</h3><p>Це лише гра: паролі випадкові, справжніх мереж тут немає. Спробуй ще раз із новими кодами.</p><button class="btn" data-again>Грати знову</button></div>';
+    h+='<div class="card"><div class="hero"><div class="big">'+wifi(3,38)+'</div><h1>Wi-Fi</h1>'+
+      '<p>Тапни мережу, щоб підібрати пароль. Це гра: паролі це випадкові цифрові коди, жодних реальних мереж.</p></div>'+
+      '<div class="row"><span class="name" style="padding-left:44px">Wi-Fi</span><button class="sw'+(wifiOn&&!airplane?' on':'')+'" data-wifi aria-label="Wi-Fi"></button></div>'+
+      (wifiOn&&!airplane?netRow(cn):'')+'</div>';
+    if(!wifiOn||airplane){p.innerHTML=h+'<div class="cap" style="margin-top:-6px">'+(airplane?'Режим польоту вимкнув Wi-Fi і Bluetooth.':'Wi-Fi вимкнено. Увімкни, щоб побачити мережі.')+'</div>';return}
+    var saved=everyone.filter(function(n){return n.name!==connected&&(n.name==='sweet_home'||n.cracked)});
+    var other=nets.filter(function(n){return n.name!==connected&&!n.cracked});
+    if(saved.length)h+='<div class="hd">My Networks</div><div class="card">'+saved.map(netRow).join('')+'</div>';
+    h+='<div class="hd">Other Networks</div><div class="card">'+other.map(netRow).join('')+'<div class="row pad"><span class="name">Other…</span></div></div>';
+    p.innerHTML=h;
+  }
+  var chgT=null;
+  function showCharge(){
+    var el=$('#chgscr');updateChargeScr();el.classList.add('on');
+    clearTimeout(chgT);chgT=setTimeout(function(){el.classList.remove('on')},4500);
+  }
+  function updateChargeScr(){
+    var f=$('#cfill'),pc=$('#cpct');
+    if(f)f.setAttribute('width',Math.max(0,battery*0.82));
+    if(pc)pc.textContent=battery+'%';
+  }
+  function hhmm(){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
+  function chargeTick(){
+    if(!charging||battery>=100)return;
+    battery++;lastCharge={to:battery,t:hhmm()};updateChargeScr();
+    renderStatus();renderSide();
+    if(cur&&battery<=3)updateSheet();
+    if(page==='battery'&&!cur)renderPane();
+    save();
+  }
+  function renderBattery(p){
+    var mins=Math.max(1,Math.round((Date.now()-t0)/60000));
+    var days=['F','S','S','M','T','W','T','F'],hs=[78,86,45,28,66,54,50];
+    var today=Math.min(100,spent),bars='',lbl='';
+    hs.concat([today||2]).forEach(function(v,i){bars+='<div'+(i===7?' class="now"':'')+' style="height:'+Math.max(4,v*1.5)+'px"></div>';lbl+='<span>'+days[i]+'</span>'});
+    var state=charging?(battery>=100?'Charged':'Charging'):(battery<=20?'Low Power':'On Battery');
+    var h='<div class="top"><button class="round" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Battery</h2></div>'+
+      '<div class="card" style="padding:16px 18px 20px"><div class="bigpct">'+battery+'<small>%</small></div>'+
+      '<div style="color:'+(charging?'var(--green)':'var(--dim)')+';margin:2px 0 12px;font-weight:600">'+state+'</div>'+
+      '<div class="bar'+(charging?' chg':'')+'"><i style="width:'+battery+'%"></i></div>'+
+      '<div style="margin-top:12px;font-size:15px"><b>Last Charged to '+(lastCharge?lastCharge.to+'%':'69%')+':</b> <span style="color:var(--dim)">'+(lastCharge?lastCharge.t:'16:06')+'</span></div></div>'+
+      '<div class="card"><div class="row"><span class="name">Charger</span><button class="sw'+(charging?' on':'')+'" data-chg aria-label="Charger"></button></div></div>'+
+      '<div class="cap">Підключи зарядку, щоб батарея відновлювалась: +1% приблизно кожні секунду. На 0% підбір зупиняється, поки не зарядиш пристрій.</div>'+
+      '<div class="hd">Daily Usage</div><div class="card" style="padding:16px 18px">'+
+      '<div style="font-size:17px;font-weight:600;line-height:1.35;padding-bottom:14px;border-bottom:1px solid var(--sep)">'+(spent>40?'Сьогодні ти витрачаєш більше батареї, ніж зазвичай.':'You’re using a similar amount of battery today as you usually do by '+hhmm()+'.')+'</div>'+
+      '<div class="stat"><div><small>Average</small><b>53<i>%</i></b></div><div><small style="color:var(--blue)">Today</small><b style="color:var(--blue)">'+today+'<i>%</i></b></div></div>'+
+      '<div class="bars">'+bars+'</div><div class="dl">'+lbl+'</div>'+
+      '<div style="font-size:17px;font-weight:600;margin:14px 0 4px">App and System Activity</div>'+
+      '<div class="row" style="min-height:64px"><span class="appico" style="background:linear-gradient(#2a9bff,#0a6fe8)">'+wifi(3,20)+'</span><span class="name">Wi-Fi Breaker<br><span style="color:var(--dim);font-size:15px">On screen: '+mins+'m</span></span><span class="val" style="font-size:19px">'+spent+'%</span></div>'+
+      '<div class="row" style="min-height:64px"><span class="appico" style="background:#8e8e93">'+S.gen+'</span><span class="name">Settings<br><span style="color:var(--dim);font-size:15px">On screen: 6m</span></span><span class="val" style="font-size:19px">2%</span></div>'+
+      '<div class="row" style="min-height:64px"><span class="appico" style="background:#0a84ff">'+S.acc+'</span><span class="name">Safari<br><span style="color:var(--dim);font-size:15px">On screen: 3m</span></span><span class="val" style="font-size:19px">1%</span></div></div>';
+    p.innerHTML=h;
+  }
+  function renderDetail(p){
+    var name=view,n=net(name),home=name==='sweet_home';
+    var known=home||n.cracked;
+    var pw=home?'12345678':n.password;
+    var shown=reveal[name];
+    var h='<div class="top"><button class="round" data-back aria-label="Back">'+ICON.back+'</button><h2>'+name+'</h2></div>'+
+      '<div class="card"><div class="row click" data-forget><span class="link">Forget This Network</span></div></div>'+
+      '<div class="card"><div class="row"><span class="name">Auto-Join</span><button class="sw'+(autoJoin[name]!==false?' on':'')+'" data-auto aria-label="Auto-Join"></button></div>'+
+      '<div class="row click" data-pw><span class="name">Password</span><span class="val '+(shown&&known?'mono':'')+'">'+
+        (known?(shown?pw:'●●●●●●●●'):'Невідомо')+'</span></div></div>'+
+      '<div class="cap">'+(known?'Тапни рядок Password, щоб показати або сховати пароль.':'Пароль ще не зламано. Відкрий Join та підбери код.')+'</div>'+
+      '<div class="card"><div class="row"><span class="name">Security</span><span class="val">WPA2 Personal</span></div>'+
+      '<div class="row"><span class="name">Довжина коду</span><span class="val">'+(home?8:n.len)+' цифр</span></div>'+
+      '<div class="row"><span class="name">Сигнал</span><span class="val">'+['','слабкий','середній','сильний'][n?n.signal:3]+'</span></div>'+
+      '<div class="row"><span class="name">Wi-Fi Type</span><span class="val">Wi-Fi 5 (802.11ac)</span></div></div>';
+    p.innerHTML=h;
+  }
+
+  /* ---------- join sheet: password cracking takes time ---------- */
+  var cur=null,crackTimer=null,cracking=false,drainAcc=0,lastB=-1;
+  var STAGES=['Пошук мережі та handshake','Перехоплення пакетів','Підбір за словником','Перебір комбінацій','Перевірка збігу'];
+  function openSheet(name){
+    var n=net(name);
+    cur=n;cracking=false;drainAcc=0;lastB=-1;
+    var host=$('#sheetHost');
+    host.innerHTML='<div class="dim" id="dim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Join '+n.name+'">'+
+      '<div class="sh-top"><button class="round" id="sx" aria-label="Cancel">'+ICON.x+'</button><button class="round ok ready" id="sok" aria-label="Start">'+ICON.check+'</button></div>'+
+      '<div class="sh-wifi">'+bigWifi()+'</div>'+
+      '<h3>Join “'+n.name+'”</h3><div class="sub">Enter the password to join this Wi-Fi network.</div>'+
+      '<div class="pw" id="pw" role="status"></div>'+
+      '<div class="bar" style="margin:16px 6px 0"><i id="pfill" style="width:0"></i></div>'+
+      '<div class="hint"><span id="ptxt"></span><span id="peta"></span></div>'+
+      '<div class="plog" id="plog"></div>'+
+      '<button class="btn" id="go" style="margin-top:18px;width:100%">Почати підбір</button>'+
+      '<div class="note">Підбір займає час: що сильніша мережа, то довше. Він іде, поки це вікно відкрите, і витрачає батарею.</div>'+
+      '<div id="msg"></div></div></div>';
+    $('#sx').onclick=closeSheet;$('#sok').onclick=toggleCrack;$('#go').onclick=toggleCrack;
+    $('#dim').addEventListener('mousedown',function(e){if(e.target.id==='dim')closeSheet()});
+    updateSheet();
+  }
+  function toggleCrack(){
+    var n=cur;if(!n||n.cracked)return;
+    if(cracking){stopCrack();updateSheet();return}
+    if(battery<=0){updateSheet();return}
+    cracking=true;
+    crackTimer=setInterval(crackStep,100);
+    updateSheet();
+  }
+  function stopCrack(){cracking=false;clearInterval(crackTimer);crackTimer=null}
+  function crackStep(){
+    var n=cur;if(!n){stopCrack();return}
+    n.prog=Math.min(1,n.prog+0.1/n.secs);
+    drainAcc+=0.1;
+    if(drainAcc>=3){drainAcc=0;battery=Math.max(0,battery-1);spent++}
+    if(battery<=0)stopCrack();
+    if(n.prog>=1){
+      stopCrack();n.cracked=true;updateSheet();
+      setTimeout(function(){if(cur===n){closeSheet();connect(n.name,'Пароль підібрано. Підключено до «'+n.name+'».')}},900);
+      return;
+    }
+    updateSheet();
+  }
+  function updateSheet(){
+    var n=cur;if(!n)return;
+    var p=n.prog,h='',i;
+    if(p<=0&&!cracking)h='<span class="ph">Password</span>';
+    else for(i=0;i<n.len;i++){
+      var locked=n.cracked||p>=(i+1)/n.len*0.92;
+      h+=locked?'<span class="lk">'+n.password[i]+'</span>':'<span class="sc">'+Math.floor(Math.random()*10)+'</span>';
+    }
+    $('#pw').innerHTML=h;
+    $('#pfill').style.width=(p*100)+'%';
+    var started=p>0||cracking;
+    $('#ptxt').textContent=n.cracked?'Пароль знайдено':(started?Math.floor(p*100)+'%':'Очікування');
+    $('#peta').textContent=n.cracked?'':(started?'Залишилось ~'+Math.ceil((1-p)*n.secs)+' с':'Орієнтовно '+n.secs+' с');
+    var stage=Math.min(STAGES.length-1,Math.floor(p*STAGES.length)),lg='';
+    if(started)for(var s2=0;s2<=stage;s2++)lg+='<div>'+(s2<stage||n.cracked?'✓ ':'› ')+STAGES[s2]+(s2===stage&&!n.cracked?'…':'')+'</div>';
+    $('#plog').innerHTML=lg;
+    $('#go').textContent=n.cracked?'Готово':cracking?'Пауза':(p>0?'Продовжити':'Почати підбір');
+    if(lastB!==battery){lastB=battery;renderStatus();renderSide()}
+    var m=battery<=0&&!n.cracked?'<div class="alert">Батарея розряджена. <button class="tool" id="chg" style="margin-left:6px">Підключити зарядку</button></div>':'';
+    var msg=$('#msg');
+    if(msg.getAttribute('data-s')!==m){
+      msg.setAttribute('data-s',m);msg.innerHTML=m;
+      var c=$('#chg');
+      if(c)c.onclick=function(){charging=true;showCharge();toast('Зарядку підключено');updateSheet()};
+    }
+  }
+  function closeSheet(){stopCrack();cur=null;$('#sheetHost').innerHTML='';renderAll()}
+
+  /* ---------- events ---------- */
+  document.addEventListener('click',function(e){
+    var t=e.target;
+    var inf=t.closest('[data-info]');
+    if(inf){view=inf.getAttribute('data-info');renderPane();e.stopPropagation();return}
+    var j=t.closest('[data-join]');
+    if(j){
+      var name=j.getAttribute('data-join');
+      if(name===connected)return;
+      if(name==='sweet_home'){connect(name,'Підключено до домашньої мережі');return}
+      var n=net(name);
+      if(n.cracked){connect(name,'Підключено до «'+name+'»');return}
+      openSheet(name);return;
+    }
+    if(t.closest('[data-back]')){view=null;renderPane();return}
+    if(t.closest('[data-acct]')){if(acct){page='account';view=null;gsub=null;renderAll()}else openAcct();return}
+    if(t.closest('[data-air]')){airplane=!airplane;toast(airplane?'Режим польоту увімкнено':'Режим польоту вимкнено');renderAll();return}
+    if(t.closest('[data-wifi]')){if(airplane)toast('Спершу вимкни режим польоту');else wifiOn=!wifiOn;renderAll();return}
+    if(t.closest('[data-bt]')){if(airplane)toast('Спершу вимкни режим польоту');else btOn=!btOn;renderAll();return}
+    if(t.closest('[data-btdev]')){toast('CW-TWS2 поза зоною дії');return}
+    var gs=t.closest('[data-gsub]');
+    if(gs){var gk=gs.getAttribute('data-gsub');if(gk==='x')toast('Недоступно в грі');else{gsub=gk;renderPane()}return}
+    if(t.closest('[data-gback]')){gsub=null;renderPane();return}
+    if(t.closest('[data-reset]')){newGame();renderAll();toast('Прогрес скинуто');return}
+    if(t.closest('[data-signout]')){save();acct=null;ls('wb_cur',null,true);newGame();page='wifi';renderAll();toast('Ви вийшли з акаунта');return}
+    var pgEl=t.closest('[data-page]');
+    if(pgEl){page=pgEl.getAttribute('data-page');view=null;gsub=null;renderAll();return}
+    if(t.closest('[data-chg]')){charging=!charging;if(charging)showCharge();else $('#chgscr').classList.remove('on');toast(charging?'Зарядку підключено':'Зарядку відключено');renderAll();return}
+    if(t.closest('[data-again]')){newGame();renderAll();return}
+    if(t.closest('[data-auto]')){autoJoin[view]=autoJoin[view]===false;renderPane();return}
+    if(t.closest('[data-pw]')){
+      var n2=net(view);if(view==='sweet_home'||n2.cracked){reveal[view]=!reveal[view];renderPane()}
+      else toast('Пароль ще невідомий');
+      return;
+    }
+    if(t.closest('[data-forget]')){
+      if(view==='sweet_home'){toast('Це твоя домашня мережа, її не забуваємо');return}
+      var n3=net(view);resetNet(n3);if(connected===view)connected='sweet_home';
+      view=null;renderAll();toast('Мережу забуто. Роутер згенерував новий пароль.');
+    }
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&(cur||$('#acct')))closeSheet();
+    if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.row.click,.sitem[data-page]')){e.preventDefault();e.target.click()}
+  });
+
+  function renderAll(){renderStatus();renderSide();renderPane();save()}
+  newGame();renderAll();
+  setInterval(renderStatus,30000);
+  setInterval(chargeTick,1200);
+  $('#chgscr').addEventListener('click',function(){this.classList.remove('on')});
+  autoLogin();
+})();
+</script>
+
+</body></html>
