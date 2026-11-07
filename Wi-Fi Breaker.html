@@ -25,15 +25,16 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 button:focus-visible,input:focus-visible,.row:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-.app{display:flex;height:100%;gap:0;min-width:0}
-.status{position:absolute;left:0;right:0;top:0;height:30px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:13px;font-weight:600;pointer-events:none;z-index:2}
+.app{display:flex;height:100%;gap:0;min-width:0;padding-top:30px}
+.status{position:absolute;left:0;right:0;top:0;height:30px;background:linear-gradient(90deg,var(--side) 0 272px,var(--bg) 272px);display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:13px;font-weight:600;pointer-events:none;z-index:2}
 .status .r{display:flex;gap:8px;align-items:center}
 .batt{background:#fff;color:#000;border-radius:7px;padding:0 6px;font-size:12px;font-weight:700;line-height:17px;min-width:30px;text-align:center}
 .batt.low{background:var(--red);color:#fff}
 
 /* sidebar */
-.side{width:272px;flex:none;background:var(--side);padding:56px 14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-left:max(14px,env(safe-area-inset-left,0px))}
-.search{display:flex;align-items:center;gap:8px;background:#1b1d21;border-radius:22px;padding:11px 14px;color:var(--dim);font-size:16px;margin-bottom:8px}
+.side{width:272px;flex:none;background:var(--side);padding:0 14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-left:max(14px,env(safe-area-inset-left,0px))}
+.search{display:flex;align-items:center;gap:8px;background:#1b1d21;border-radius:22px;padding:11px 14px;color:var(--dim);font-size:16px}
+.sthead{position:sticky;top:0;z-index:3;background:var(--side);padding:12px 0 10px;margin-bottom:2px}
 .me{display:flex;gap:12px;align-items:center;padding:10px 4px}
 .av{width:52px;height:52px;border-radius:50%;flex:none;background:conic-gradient(from 200deg,#0a84ff,#30d158,#ff9f0a,#0a84ff);display:grid;place-items:center;font-weight:700;font-size:20px}
 .me b{display:block;font-size:17px}.me small{color:var(--dim);font-size:13px;line-height:1.25;display:block}
@@ -47,7 +48,7 @@ button:focus-visible,input:focus-visible,.row:focus-visible{outline:2px solid va
 .gap{height:10px}
 
 /* main */
-.main{flex:1;min-width:0;overflow-y:auto;padding:56px 18px 40px;position:relative}
+.main{flex:1;min-width:0;overflow-y:auto;padding:20px 18px 40px;position:relative}
 .wrap{max-width:900px;margin:0 auto}
 .card{background:var(--card);border-radius:28px;padding:6px 18px;margin-bottom:22px}
 .hero{padding:18px 0 4px}
@@ -100,10 +101,16 @@ button.me:hover{background:#15171b}
 .me.on{background:#1e2025}
 .hero .big svg:not([width]){width:34px;height:34px}
 .pl{display:block;width:15px;height:15px}.pl svg{width:100%;height:100%}
+.score{display:none}
+.mnav,.mback{display:none}
+.editrow{display:flex;justify-content:flex-end;margin-bottom:6px}
+.editbtn{background:#1c1c1e;border-radius:22px;padding:10px 18px;font-weight:500;box-shadow:0 0 0 1px #2b2b2e}
+.top .round:not(.mback)+h2{padding-right:58px}
+@media (max-width:760px){.score{display:inline-flex}}
 /* detail */
 .top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
 .round{width:46px;height:46px;border-radius:50%;background:#1c1c1e;display:grid;place-items:center;flex:none;box-shadow:0 0 0 1px #2b2b2e}
-.top h2{flex:1;text-align:center;font-size:17px;margin:0;padding-right:46px}
+.top h2{flex:1;text-align:center;font-size:17px;margin:0;padding-right:0}
 .link{color:var(--blue)}
 .cap{color:var(--dim);font-size:13px;line-height:1.4;margin:-10px 8px 22px}
 .val{margin-left:auto;color:var(--dim);font-variant-numeric:tabular-nums;font-family:var(--font)}
@@ -142,7 +149,13 @@ button.me:hover{background:#15171b}
 
 @media (max-width:760px){
   .side{display:none}
-  .main{padding:44px 0 40px}
+  .status{background:var(--bg)}
+  .mback{display:grid}
+  .top .mback+h2{padding-right:58px}
+  .mnav{display:flex;gap:8px;overflow-x:auto;padding:0 0 16px}
+  .mnav button{flex:none;background:var(--card);border-radius:18px;padding:8px 14px;font-size:14px}
+  .mnav button.on{background:var(--blue)}
+  .main{padding:20px 0 40px}
   .card{padding:4px 14px}
   .row.pad{padding-left:34px}
 }
@@ -152,7 +165,7 @@ button.me:hover{background:#15171b}
 <div class="app">
   <div class="status"><span id="clock"></span><span class="r"><span id="wf"></span><span class="batt" id="batt">34</span></span></div>
   <aside class="side" id="side"></aside>
-  <main class="main"><div class="wrap" id="pane"></div></main>
+  <main class="main"><div class="mnav" id="mnav"></div><div class="wrap" id="pane"></div></main>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="chgscr" id="chgscr" aria-hidden="true">
@@ -354,7 +367,7 @@ button.me:hover{background:#15171b}
       ['#8e8e93',S.pen,'Apple Pencil','']
     ];
     var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general'};
-    var h='<div class="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M12 12l5 5"/></svg>Search</div>'+
+    var h='<div class="sthead"><div class="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M12 12l5 5"/></svg>Search</div></div>'+
       meHtml()+'<div class="gap"></div>';
     items.forEach(function(it){
       if(!it){h+='<div class="gap"></div>';return}
@@ -365,6 +378,9 @@ button.me:hover{background:#15171b}
       h+='<div class="sitem'+(on?' on':'')+'"'+(pg?' data-page="'+pg+'" tabindex="0"':'')+'>'+sIco(it[0],icon)+'<span>'+it[2]+'</span><span class="v">'+val+'</span></div>';
     });
     $('#side').innerHTML=h;
+    var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
+      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+(acct?acct:'Sign in')+'</button><button data-air'+(airplane?' class="on"':'')+'>Літак</button>';
+    $('#mnav').innerHTML=mn;
   }
   var CHEV='<svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="#6b6b70" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l6 6-6 6"/></svg>';
   function ig(d){return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="'+d+'"/></svg>'}
@@ -467,17 +483,17 @@ button.me:hover{background:#15171b}
     var all=cracked()===nets.length;
     var everyone=[{name:'sweet_home',signal:3}].concat(nets);
     var cn=everyone.filter(function(n){return n.name===connected})[0];
-    var h='<div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(acct?acct:'Sign in')+'</button></div>';
+    var h='<div class="editrow"><button class="editbtn" data-gsub="x">Edit</button></div><div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(acct?acct:'Sign in')+'</button></div>';
     if(all)h+='<div class="win"><h3>Усі мережі зламано</h3><p>Це лише гра: паролі випадкові, справжніх мереж тут немає. Спробуй ще раз із новими кодами.</p><button class="btn" data-again>Грати знову</button></div>';
     h+='<div class="card"><div class="hero"><div class="big">'+wifi(3,38)+'</div><h1>Wi-Fi</h1>'+
-      '<p>Тапни мережу, щоб підібрати пароль. Це гра: паролі це випадкові цифрові коди, жодних реальних мереж.</p></div>'+
+      '<p>Connect to Wi-Fi, view available networks, and manage settings for joining networks and nearby hotspots. <span class="link">Learn more…</span></p></div>'+
       '<div class="row"><span class="name" style="padding-left:44px">Wi-Fi</span><button class="sw'+(wifiOn&&!airplane?' on':'')+'" data-wifi aria-label="Wi-Fi"></button></div>'+
       (wifiOn&&!airplane?netRow(cn):'')+'</div>';
     if(!wifiOn||airplane){p.innerHTML=h+'<div class="cap" style="margin-top:-6px">'+(airplane?'Режим польоту вимкнув Wi-Fi і Bluetooth.':'Wi-Fi вимкнено. Увімкни, щоб побачити мережі.')+'</div>';return}
     var saved=everyone.filter(function(n){return n.name!==connected&&(n.name==='sweet_home'||n.cracked)});
     var other=nets.filter(function(n){return n.name!==connected&&!n.cracked});
     if(saved.length)h+='<div class="hd">My Networks</div><div class="card">'+saved.map(netRow).join('')+'</div>';
-    h+='<div class="hd">Other Networks</div><div class="card">'+other.map(netRow).join('')+'<div class="row pad"><span class="name">Other…</span></div></div>';
+    h+='<div class="hd">Other Networks</div><div class="card">'+other.map(netRow).join('')+'<div class="row pad"><span class="name">Other…</span></div></div><div class="cap" style="margin-top:-8px">Гра: тапни мережу, щоб підібрати пароль. Паролі випадкові, справжніх мереж тут немає.</div>';
     p.innerHTML=h;
   }
   var chgT=null;
@@ -505,7 +521,7 @@ button.me:hover{background:#15171b}
     var today=Math.min(100,spent),bars='',lbl='';
     hs.concat([today||2]).forEach(function(v,i){bars+='<div'+(i===7?' class="now"':'')+' style="height:'+Math.max(4,v*1.5)+'px"></div>';lbl+='<span>'+days[i]+'</span>'});
     var state=charging?(battery>=100?'Charged':'Charging'):(battery<=20?'Low Power':'On Battery');
-    var h='<div class="top"><button class="round" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Battery</h2></div>'+
+    var h='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Battery</h2></div>'+
       '<div class="card" style="padding:16px 18px 20px"><div class="bigpct">'+battery+'<small>%</small></div>'+
       '<div style="color:'+(charging?'var(--green)':'var(--dim)')+';margin:2px 0 12px;font-weight:600">'+state+'</div>'+
       '<div class="bar'+(charging?' chg':'')+'"><i style="width:'+battery+'%"></i></div>'+
