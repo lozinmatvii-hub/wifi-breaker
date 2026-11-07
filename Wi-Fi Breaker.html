@@ -171,6 +171,7 @@ button.me:hover{background:#15171b}
 .ntxt{width:100%;min-height:320px;background:none;border:0;color:#fff;font:inherit;font-size:18px;line-height:1.45;resize:vertical;outline:0}
 .batt.lpm{background:#ffd60a;color:#000}
 body.bold{font-weight:600}
+#clock,#wf{display:none}.status{justify-content:flex-end}
 body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{display:none}body.fsmode .status{justify-content:flex-end}body.fsmode .app{padding-top:62px}
 #dimmer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:200}
 #tint{position:fixed;inset:0;background:#fff1dc;mix-blend-mode:multiply;pointer-events:none;z-index:199}
@@ -243,8 +244,8 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
 
   /* ---------- game state ---------- */
   /* ---------- game state ---------- */
-  var CS={d:'0123456789',ld:'abcdefghijklmnopqrstuvwxyz0123456789',Ld:'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',Lds:'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*?'};
-  var CSN={d:'цифри 0–9',ld:'a–z, 0–9',Ld:'a–z, A–Z, 0–9',Lds:'a–z, A–Z, 0–9, !@#$%&*?'};
+  var CS={l:'abcdefghijklmnopqrstuvwxyz',d:'0123456789',ld:'abcdefghijklmnopqrstuvwxyz0123456789',Ld:'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',Lds:'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*?'};
+  var CSN={l:'літери a–z',d:'цифри 0–9',ld:'a–z, 0–9',Ld:'a–z, A–Z, 0–9',Lds:'a–z, A–Z, 0–9, !@#$%&*?'};
   var COMMON={Euphoria:['1234','0000','1111'],Euphoria1:['123456','111111','000000'],k35:['qwerty','abc123','hello1']};
   var WORDS=['password','qwerty','letmein','admin123','iloveyou','welcome1','dragon','monkey12','sunshine','football'];
   var DEFS=[
@@ -253,9 +254,11 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     {name:'k35',len:6,signal:3,secs:45,sec:'WPA2 Personal',cs:'ld',lvl:3},
     {name:'TANY',len:8,signal:2,secs:80,sec:'WPA2 Personal',cs:'Ld',lvl:4},
     {name:'TP-Link_254E',len:9,signal:2,secs:130,sec:'WPA3 Personal',cs:'Lds',lvl:5},
-    {name:'OSVITLA STUDENT-education',len:8,signal:3,secs:60,sec:'WPA2 Personal',cs:'ld',lvl:3},
-    {name:'OSVITLA ACADEMY-shevchenco',len:10,signal:3,secs:110,sec:'WPA2 Personal',cs:'Ld',lvl:5},
-    {name:'Kyiv_Net_5G',len:12,signal:1,secs:200,sec:'WPA3 Personal',cs:'Lds',lvl:6}
+    {name:'OSVITLA STUDENT-education',len:9,signal:3,secs:60,sec:'WPA2 Personal',cs:'l',lvl:3,fixed:'education'},
+    {name:'OSVITLA ACADEMY-shevchenco',len:10,signal:3,secs:110,sec:'WPA2 Personal',cs:'l',lvl:5,fixed:'shevchenco'},
+    {name:'Kyiv_Net_5G',len:12,signal:1,secs:200,sec:'WPA3 Personal',cs:'Lds',lvl:6},
+    {name:'Lumen Space',len:0,signal:3,secs:0,sec:'Open',cs:'d',lvl:0,open:true},
+    {name:'Lumen Tower',len:5,signal:1,secs:300,sec:'WPA3 Personal',cs:'Lds',lvl:7,fixed:'MANEJ'}
   ];
   var nets,connected,battery,view,autoJoin,reveal,joining;
   var page='wifi',charging=false,spent=0,t0=Date.now(),lastCharge=null;
@@ -264,6 +267,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   var LOCKS=[['30 Seconds',30],['1 Minute',60],['2 Minutes',120],['5 Minutes',300],['Never',0]];
   function ksOf(n){return Math.pow(CS[n.cs].length,n.len)}
   function rndPw(n){
+    if(n.fixed)return n.fixed;
     var c=COMMON[n.name];
     if(c&&Math.random()<0.55)return c[Math.floor(Math.random()*c.length)];
     var cs=CS[n.cs],s='';
@@ -302,7 +306,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     d.nets.forEach(function(s){
       var n=net(s.name);
       if(n&&typeof s.password==='string'&&s.password.length===n.len){
-        n.password=s.password;n.prog=s.prog||0;n.cracked=!!s.cracked;n.dictDone=!!s.dictDone;
+        n.password=s.password;n.prog=s.prog||0;n.cracked=!!s.cracked;n.dictDone=!!s.dictDone;if(n.fixed)n.password=n.fixed;
         n.weak=(COMMON[n.name]||[]).indexOf(n.password)>=0;
       }
     });
@@ -348,7 +352,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     setTimeout(function(){var a=$('#an');if(a){a.focus();a.select()}},60);
   }
   function newGame(){
-    nets=DEFS.map(function(d){var n={name:d.name,len:d.len,signal:d.signal,secs:d.secs,sec:d.sec,cs:d.cs,lvl:d.lvl};resetNet(n);return n});
+    nets=DEFS.map(function(d){var n={name:d.name,len:d.len,signal:d.signal,secs:d.secs,sec:d.sec,cs:d.cs,lvl:d.lvl,fixed:d.fixed,open:d.open};resetNet(n);return n});
     connected='sweet_home';battery=34;view=null;autoJoin={};reveal={};lowWarned={20:false,10:false};
   }
   function net(name){return nets.filter(function(n){return n.name===name})[0]}
@@ -549,7 +553,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var lead=isC?'<span class="tick">'+ICON.check+'</span>':isJ?'<span class="tick"><i class="spin"></i></span>':'';
     return '<div class="row click '+(lead?'':'pad')+'" tabindex="0" data-join="'+n.name+'">'+
       (lead?lead+'<span style="width:32px"></span>':'')+
-      '<span class="name">'+n.name+'</span><span class="ic">'+ICON.lock+wifi(n.signal,22)+
+      '<span class="name">'+n.name+'</span><span class="ic">'+(n.open?'':ICON.lock)+wifi(n.signal,22)+
       '<button class="info" data-info="'+n.name+'" aria-label="Details '+n.name+'">i</button></span></div>';
   }
   function renderPane(){
@@ -629,11 +633,11 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div class="card"><div class="row click" data-forget><span class="link">Forget This Network</span></div></div>'+
       '<div class="card"><div class="row"><span class="name">Auto-Join</span><button class="sw'+(autoJoin[name]!==false?' on':'')+'" data-auto aria-label="Auto-Join"></button></div>'+
       '<div class="row click" data-pw><span class="name">Password</span><span class="val '+(shown&&known?'mono':'')+'">'+
-        (known?(shown?pw:'●●●●●●●●'):'Невідомо')+'</span></div></div>'+
+        (n&&n.open?'Немає':known?(shown?pw:'●●●●●●●●'):'Невідомо')+'</span></div></div>'+
       '<div class="cap">'+(known?'Тапни рядок Password, щоб показати або сховати пароль.':'Пароль ще не зламано. Відкрий Join та підбери код.')+'</div>'+
       '<div class="card"><div class="row"><span class="name">Security</span><span class="val">'+(home?'WPA2 Personal':n.sec)+'</span></div>'+
-      '<div class="row"><span class="name">Довжина пароля</span><span class="val">'+(home?8:n.len)+' симв.</span></div>'+
-      (home?'':'<div class="row"><span class="name">Складність</span><span class="val">Рівень '+n.lvl+' з 6</span></div><div class="row"><span class="name">Символи</span><span class="val">'+CSN[n.cs]+'</span></div>')+
+      '<div class="row"><span class="name">Довжина пароля</span><span class="val">'+(n&&n.open?'—':(home?8:n.len)+' симв.')+'</span></div>'+
+      (home||n.open?'':'<div class="row"><span class="name">Складність</span><span class="val">Рівень '+n.lvl+' з 7</span></div><div class="row"><span class="name">Символи</span><span class="val">'+CSN[n.cs]+'</span></div>')+
       '<div class="row"><span class="name">Сигнал</span><span class="val">'+['','слабкий','середній','сильний'][n?n.signal:3]+'</span></div>'+
       '<div class="row"><span class="name">Wi-Fi Type</span><span class="val">Wi-Fi 5 (802.11ac)</span></div></div>';
     p.innerHTML=h;
@@ -775,6 +779,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       if(name===connected)return;
       if(name==='sweet_home'){connect(name,'Підключено до домашньої мережі');return}
       var n=net(name);
+      if(n.open){n.cracked=true;connect(name,'Підключено до відкритої мережі «'+name+'»');return}
       if(n.cracked){connect(name,'Підключено до «'+name+'»');return}
       openSheet(name);return;
     }
@@ -809,7 +814,8 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(t.closest('[data-again]')){newGame();renderAll();return}
     if(t.closest('[data-auto]')){autoJoin[view]=autoJoin[view]===false;renderPane();return}
     if(t.closest('[data-pw]')){
-      var n2=net(view);if(view==='sweet_home'||n2.cracked){reveal[view]=!reveal[view];renderPane()}
+      var n2=net(view);if(n2&&n2.open){toast('Відкрита мережа без пароля','Wi-Fi');return}
+      if(view==='sweet_home'||n2.cracked){reveal[view]=!reveal[view];renderPane()}
       else toast('Пароль ще невідомий','Wi-Fi');
       return;
     }
