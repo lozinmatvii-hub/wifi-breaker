@@ -247,10 +247,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     gen:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="9"/></svg>',
     acc:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="8" r="1" fill="#fff"/><path d="M7.5 10.5h9M12 11v4M10 19l2-4 2 4"/></svg>',
     app:'<svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg>',
-    bell:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6zM10 19a2 2 0 0 0 4 0z"/></svg>',
-    snd:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',
-    hand:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>',
-    key:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l3 3"/></svg>',
+    vpn:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
     term:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l6 6-6 6M12 18h8"/></svg>',
     note:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6zM9 11h7M9 15h7"/></svg>',
     disp:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg>',
@@ -278,7 +275,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   var nets,connected,battery,view,autoJoin,reveal,joining;
   var page='wifi',charging=false,spent=0,t0=Date.now(),lastCharge=null;
   var airplane=false,wifiOn=true,btOn=true,gsub=null;
-  var vpn=false,privMac=false,notifOn=true,sndVol=0.6,pvShow={},notes=[],noteOpen=null,bright=1,trueTone=true,nightShift=false,lpm=false,boldTxt=false,lockIdx=3,lastAct=Date.now(),lowWarned={20:false,10:false};
+  var vpn=false,notes=[],noteOpen=null,bright=1,trueTone=true,nightShift=false,lpm=false,boldTxt=false,lockIdx=3,lastAct=Date.now(),lowWarned={20:false,10:false};
   var LOCKS=[['30 Seconds',30],['1 Minute',60],['2 Minutes',120],['5 Minutes',300],['Never',0]];
   function ksOf(n){return Math.pow(CS[n.cs].length,n.len)}
   function rndPw(n){
@@ -308,7 +305,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   /* progress saves by itself, no sign-in needed */
   function save(){
     if(!nets)return;
-    ls('wb_save2',{notes:notes,name:acct,mail:mail,connected:connected,battery:battery,disp:{vpn:vpn,pm:privMac,nf:notifOn,sv:sndVol,b:bright,tt:trueTone,ns:nightShift,lpm:lpm,bold:boldTxt,lk:lockIdx},
+    ls('wb_save2',{notes:notes,name:acct,mail:mail,connected:connected,battery:battery,disp:{vpn:vpn,b:bright,tt:trueTone,ns:nightShift,lpm:lpm,bold:boldTxt,lk:lockIdx},
       nets:nets.map(function(n){return {name:n.name,password:n.password,prog:n.prog,cracked:n.cracked,dictDone:n.dictDone}})});
   }
   function load(){
@@ -330,7 +327,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     battery=typeof d.battery==='number'?d.battery:34;
     var x=d.disp||{};
     if(typeof x.b==='number')bright=Math.min(1,Math.max(.1,x.b));
-    vpn=!!x.vpn;privMac=!!x.pm;notifOn=x.nf!==false;if(typeof x.sv==='number')sndVol=Math.min(1,Math.max(0,x.sv));
+    vpn=!!x.vpn;
     trueTone=x.tt!==false;nightShift=!!x.ns;lpm=!!x.lpm;boldTxt=!!x.bold;
     if(typeof x.lk==='number'&&LOCKS[x.lk])lockIdx=x.lk;
   }
@@ -382,8 +379,6 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   var TI={'Wi-Fi':['#0a84ff',null],Battery:['#30d158','bat'],Airplane:['#ff9500','plane'],Bluetooth:['#0a84ff','bt'],Display:['#0a84ff','disp'],Settings:['#8e8e93','gen']};
   function toast(msg,title){
     title=title||'Settings';
-    if(!notifOn)return;
-    beep(880);
     var ti=TI[title]||TI.Settings;
     $('#bico').style.background=ti[0];
     $('#bico').innerHTML=ti[1]?S[ti[1]]:wifi(3,22);
@@ -396,7 +391,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var d=document.createElement('div');d.className='alertdim';d.id='ialert';
     d.innerHTML='<div class="ios-alert" role="alertdialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="ab"><h4>'+esc(title)+'</h4><p>'+esc(msg)+'</p></div>'+
       '<div class="abs'+(btns.length>2?' col':'')+'">'+btns.map(function(b,i){return '<button class="abtn'+(b.b?' bold':'')+(b.red?' red':'')+'" data-i="'+i+'">'+esc(b.t)+'</button>'}).join('')+'</div></div>';
-    document.body.appendChild(d);beep(660);
+    document.body.appendChild(d);
     Array.prototype.forEach.call(d.querySelectorAll('.abtn'),function(el){
       el.onclick=function(e){e.stopPropagation();var b=btns[+el.getAttribute('data-i')];d.remove();if(b.fn)b.fn()};
     });
@@ -428,22 +423,18 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       ['#0a84ff',S.bt,'Bluetooth',(btOn&&!airplane)?'On':'Off'],
       ['#30d158',S.cell,'Mobile Service','Off'],
       ['#1f7a3b',S.hot,'Personal Hotspot','Off'],
+      ['#0a84ff',S.vpn,'VPN','swv'],
       ['#30d158',S.bat,'Battery',charging?'Charging':battery+'%'],
-      null,
-      ['#ff3b30',S.bell,'Notifications',notifOn?'':'Off'],
-      ['#ff2d55',S.snd,'Sounds',sndVol<=0?'Muted':''],
       null,
       ['#8e8e93',S.gen,'General',''],
       ['#0a84ff',S.disp,'Display & Brightness',''],
       ['#0a84ff',S.acc,'Accessibility',''],
       ['#111',S.app,'Appearance',''],
       ['#8e8e93',S.pen,'Apple Pencil',''],
-      ['#0a84ff',S.hand,'Privacy & Security',vpn?'VPN':''],
-      ['#8e8e93',S.key,'Passwords',''],
       ['#ffb800',S.note,'Notes',notes.length?String(notes.length):''],
       ['#3a3a3c',S.term,'Terminal','']
     ];
-    var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general','Display & Brightness':'display',Notes:'notes',Terminal:'terminal',Notifications:'notif',Sounds:'sounds','Privacy & Security':'privacy',Passwords:'passwords'};
+    var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general','Display & Brightness':'display',Notes:'notes',Terminal:'terminal'};
     var h='<div class="sthead"><div class="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M12 12l5 5"/></svg>Search</div></div>'+
       meHtml()+'<div class="gap"></div>';
     items.forEach(function(it){
@@ -451,12 +442,13 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       var icon=it[1]===null?wifi(3,20):it[1];
       var val=it[3];
       if(val==='sw')val='<button class="sw'+(airplane?' on':'')+'" data-air aria-label="Airplane Mode" style="transform:scale(.8);transform-origin:right"></button>';
+      if(val==='swv')val='<button class="sw'+(vpn?' on':'')+'" data-vpn aria-label="VPN" style="transform:scale(.8);transform-origin:right"></button>';
       var pg=PG[it[2]]||'';var on=pg&&pg===page;
       h+='<div class="sitem'+(on?' on':'')+'"'+(pg?' data-page="'+pg+'" tabindex="0"':'')+'>'+sIco(it[0],icon)+'<span>'+it[2]+'</span><span class="v">'+val+'</span></div>';
     });
     $('#side').innerHTML=h;
-    var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General'],['display','Display'],['notes','Notes'],['terminal','Terminal'],['notif','Notifications'],['sounds','Sounds'],['privacy','Privacy'],['passwords','Passwords']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
-      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+(mail?esc(acct):'Sign in')+'</button><button data-air'+(airplane?' class="on"':'')+'>Airplane</button>';
+    var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General'],['display','Display'],['notes','Notes'],['terminal','Terminal']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
+      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+(mail?esc(acct):'Sign in')+'</button><button data-vpn'+(vpn?' class="on"':'')+'>VPN</button><button data-air'+(airplane?' class="on"':'')+'>Airplane</button>';
     $('#mnav').innerHTML=mn;
   }
   var CHEV='<svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="#6b6b70" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l6 6-6 6"/></svg>';
@@ -588,10 +580,6 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(page==='display'){renderDisplay(p);return}
     if(page==='notes'){renderNotes(p);return}
     if(page==='terminal'){renderTerminal(p);return}
-    if(page==='notif'){renderNotif(p);return}
-    if(page==='sounds'){renderSounds(p);return}
-    if(page==='privacy'){renderPrivacy(p);return}
-    if(page==='passwords'){renderPasswords(p);return}
     if(page==='account'){renderAccount(p);return}
     if(view){renderDetail(p);return}
     var all=cracked()===nets.length;
@@ -799,51 +787,8 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   }
   function closeSheet(){stopCrack();cur=null;$('#sheetHost').innerHTML='';renderAll()}
 
-  /* ---------- more Settings pages ---------- */
-  function riskMul(){return (vpn?0.25:1)*(privMac?0.7:1)}
+  function riskMul(){return vpn?0.25:1}
   function drainPeriod(){return (lpm?6:3)/(vpn?1.5:1)}
-  var AC=null;
-  function beep(f,d){
-    if(sndVol<=0)return;
-    try{
-      AC=AC||new (window.AudioContext||window.webkitAudioContext)();
-      var o=AC.createOscillator(),g=AC.createGain();
-      o.frequency.value=f||880;g.gain.value=0.08*sndVol;
-      o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+(d||0.08));
-    }catch(e){}
-  }
-  function backTop(title){return '<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>'+title+'</h2></div>'}
-  function renderNotif(p){
-    p.innerHTML=backTop('Notifications')+
-      '<div class="card"><div class="row"><span class="name">Allow Notifications</span><button class="sw'+(notifOn?' on':'')+'" data-nf aria-label="Allow Notifications"></button></div></div>'+
-      '<div class="cap">When off, the game stops showing banners at the top of the screen. Alerts that need an answer still appear.</div>'+
-      '<div class="card"><div class="row click" tabindex="0" data-nftest><span class="link">Send Test Banner</span></div></div>';
-  }
-  function renderSounds(p){
-    var pc=Math.round(sndVol*100);
-    p.innerHTML=backTop('Sounds')+
-      '<div class="hd">Ringer and Alerts</div><div class="card"><div class="row" style="gap:14px;min-height:64px"><span style="color:var(--dim)">🔈</span>'+
-      '<input class="rng" id="vol" type="range" min="0" max="100" value="'+pc+'" style="--p:'+pc+'%" aria-label="Volume"><span style="color:var(--dim)">🔊</span></div>'+
-      '<div class="row click" tabindex="0" data-snd><span class="link">Play Sound</span></div></div>'+
-      '<div class="cap">Banners and alerts make a short sound. Set the slider to 0 to mute.</div>';
-  }
-  function renderPasswords(p){
-    var list=[{name:'sweet_home',pw:'12345678'}].concat(nets.filter(function(n){return n.cracked&&!n.open}).map(function(n){return {name:n.name,pw:n.password}}));
-    p.innerHTML=backTop('Passwords')+
-      '<div class="cap" style="margin-top:-10px">Wi-Fi passwords you cracked are saved here. A ban wipes them.</div>'+
-      '<div class="card">'+list.map(function(x){return '<div class="row click" tabindex="0" data-pv="'+esc(x.name)+'" style="min-height:62px"><span class="ico" style="background:#8e8e93">'+S.key+'</span><span class="name">'+esc(x.name)+'<br><span style="color:var(--dim);font-size:14px">Wi-Fi network</span></span><span class="val'+(pvShow[x.name]?' mono':'')+'">'+(pvShow[x.name]?esc(x.pw):'●●●●●●●●')+'</span></div>'}).join('')+'</div>'+
-      '<div class="cap">Tap a row to show or hide the password.</div>';
-  }
-  function renderPrivacy(p){
-    var m=riskMul();
-    p.innerHTML=backTop('Privacy &amp; Security')+
-      '<div class="card"><div class="row"><span class="name">VPN</span><button class="sw'+(vpn?' on':'')+'" data-vpn aria-label="VPN"></button></div></div>'+
-      '<div class="cap">Hides your traffic. The admin is 4 times less likely to notice you, but attacks drain the battery 50% faster.</div>'+
-      '<div class="card"><div class="row"><span class="name">Private Wi-Fi Address</span><button class="sw'+(privMac?' on':'')+'" data-pm aria-label="Private Wi-Fi Address"></button></div></div>'+
-      '<div class="cap">Hides your device address. 30% less likely to be noticed.</div>'+
-      '<div class="card"><div class="row"><span class="name">Detection risk</span><span class="val">×'+m.toFixed(2)+(m<1?' (lower)':' (normal)')+'</span></div></div>';
-  }
-  /* did-you-mean helpers */
   function lev(a,b){
     var i,j,d=[];
     for(i=0;i<=a.length;i++){d[i]=[i]}
@@ -877,7 +822,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   function startBan(n){
     if($('#banwin'))return;
     stopCrack();tStop();
-    beep(220,0.4);var left=25,d=document.createElement('div');d.id='banwin';d.className='banwin';
+    var left=25,d=document.createElement('div');d.id='banwin';d.className='banwin';
     d.innerHTML='<div class="banbox" role="alertdialog" aria-modal="true"><div style="font-size:40px">⚠</div><h3>You have been noticed</h3>'+
       '<p>The admin of “'+esc(n.name)+'” is reading the connection logs. You are about to be banned. Delete your account before the timer runs out.</p>'+
       '<div class="bant" id="bant">0:25</div><button class="btn red" id="bandel">Delete Account</button></div>';
@@ -900,7 +845,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
 
   /* ---------- Terminal app ---------- */
   var term={lines:[]},tJob=null,tTimer=null;
-  var T_HELP=['Commands:','  help                       show this list','  scan                       list nearby networks','  status                     battery, connection, progress','  attack <ssid> [dict|brute] start an attack (default: brute)','  stop                       stop the running attack','  connect <ssid> [password]  join a network','  vpn on|off                 toggle VPN (harder to notice you)','  mac on|off                 private Wi-Fi address','  clear                      clear the screen','','You can use / instead of spaces: attack/osvitla/academy/dict','Partial names work.'];
+  var T_HELP=['Commands:','  help                       show this list','  scan                       list nearby networks','  status                     battery, connection, progress','  attack <ssid> [dict|brute] start an attack (default: brute)','  stop                       stop the running attack','  connect <ssid> [password]  join a network','  vpn on|off                 toggle VPN (harder to notice you)','  clear                      clear the screen','','You can use / instead of spaces: attack/osvitla/academy/dict','Partial names work.'];
   function tLog(t,cls){
     term.lines.push({t:t,c:cls||''});if(term.lines.length>300)term.lines.shift();
     var o=$('#tout');
@@ -940,11 +885,10 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(cmd==='clear'){term.lines=[];var o=$('#tout');if(o)o.innerHTML='';return}
     if(cmd==='whoami'){tLog(acct);return}
     if(cmd==='y'&&term.sug){var sl=term.sug;term.sug=null;tRun(sl);return}
-    if(cmd==='vpn'||cmd==='mac'){
+    if(cmd==='vpn'){
       var on=(args[0]||'').toLowerCase();
-      if(on!=='on'&&on!=='off'){tLog(cmd+': '+(cmd==='vpn'?vpn:privMac?'on':'off')+'  (use: '+cmd+' on|off)');return}
-      if(cmd==='vpn')vpn=on==='on';else privMac=on==='on';
-      renderSide();renderStatus();save();tLog((cmd==='vpn'?'VPN ':'Private address ')+on,'ok');
+      if(on!=='on'&&on!=='off'){tLog('vpn: '+(vpn?'on':'off')+'  (use: vpn on|off)');return}
+      vpn=on==='on';renderSide();renderStatus();save();tLog('VPN '+on,'ok');
       return;
     }
     if(cmd==='scan'){
@@ -994,7 +938,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       tTimer=setInterval(tStep,100);
       return;
     }
-    var cs=closest(cmd,['help','scan','status','attack','stop','connect','clear','whoami','vpn','mac']);
+    var cs=closest(cmd,['help','scan','status','attack','stop','connect','clear','whoami','vpn']);
     if(cs){term.sug=cs+(args.length?' '+args.join(' '):'');tLog('command not found: '+cmd+'. Did you mean “'+cs+'”? Type y to run: '+term.sug,'warn')}
     else tLog('command not found: '+cmd+" (try 'help')",'err');
   }
@@ -1037,13 +981,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     }
     if(t.closest('[data-back]')){view=null;renderPane();return}
     if(t.closest('[data-rename]')){openAcct();return}
-    if(t.closest('[data-vpn]')){vpn=!vpn;renderAll();toast(vpn?'VPN connected':'VPN disconnected','Settings');return}
-    if(t.closest('[data-pm]')){privMac=!privMac;renderAll();return}
-    if(t.closest('[data-nf]')){notifOn=!notifOn;renderAll();return}
-    if(t.closest('[data-nftest]')){if(notifOn)toast('This is a test banner.','Settings');else alertBox('Notifications Are Off','Turn on Allow Notifications to see banners.',[{t:'OK',b:1}]);return}
-    if(t.closest('[data-snd]')){beep(880,0.15);return}
-    var pv=t.closest('[data-pv]');
-    if(pv){var pn=pv.getAttribute('data-pv');pvShow[pn]=!pvShow[pn];renderPane();return}
+    if(t.closest('[data-vpn]')){vpn=!vpn;renderAll();toast(vpn?'VPN connected. You are harder to notice, but the battery drains faster.':'VPN disconnected','Settings');return}
     if(t.closest('[data-nnew]')){var nn={id:Date.now(),text:'',t:Date.now()};notes.unshift(nn);noteOpen=nn.id;renderAll();setTimeout(function(){var a=$('#nt');if(a)a.focus()},50);return}
     var no=t.closest('[data-nopen]');
     if(no){noteOpen=+no.getAttribute('data-nopen');renderAll();return}
@@ -1084,7 +1022,6 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   });
   document.addEventListener('input',function(e){
     if(e.target&&e.target.id==='nt'){var cn=notes.filter(function(x){return x.id===noteOpen})[0];if(cn){cn.text=e.target.value;cn.t=Date.now();save()}return}
-    if(e.target&&e.target.id==='vol'){sndVol=e.target.value/100;e.target.style.setProperty('--p',e.target.value+'%');save();renderSide();return}
     if(e.target&&e.target.id==='brt'){
       bright=Math.max(.1,e.target.value/100);e.target.style.setProperty('--p',e.target.value+'%');applyDisplay();save();
     }
