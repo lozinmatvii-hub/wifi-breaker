@@ -275,7 +275,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   var nets,connected,battery,view,autoJoin,reveal,joining;
   var page='wifi',charging=false,spent=0,t0=Date.now(),lastCharge=null;
   var airplane=false,wifiOn=true,btOn=true,gsub=null;
-  var vpn=false,notes=[],noteOpen=null,bright=1,trueTone=true,nightShift=false,lpm=false,boldTxt=false,lockIdx=3,lastAct=Date.now(),lowWarned={20:false,10:false};
+  var btConn={},vpn=false,notes=[],noteOpen=null,bright=1,trueTone=true,nightShift=false,lpm=false,boldTxt=false,lockIdx=3,lastAct=Date.now(),lowWarned={20:false,10:false};
   var LOCKS=[['30 Seconds',30],['1 Minute',60],['2 Minutes',120],['5 Minutes',300],['Never',0]];
   function ksOf(n){return Math.pow(CS[n.cs].length,n.len)}
   function rndPw(n){
@@ -456,6 +456,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   function grow(bg,svg,label,key,val){
     return '<div class="row click" tabindex="0" data-gsub="'+key+'"><span class="ico" style="background:'+bg+'">'+svg+'</span><span class="name">'+label+'</span>'+(val?'<span class="val">'+val+'</span>':'')+CHEV+'</div>';
   }
+  var BTD=['WH-1000XM4','JBL Flip 5','Logi K380','MX Master 3','Galaxy A54'];
   function renderBluetooth(p){
     var on=btOn&&!airplane;
     var h='<div class="card"><div class="hero"><div class="big">'+S.bt+'</div><h1>Bluetooth</h1>'+
@@ -463,8 +464,10 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div class="row"><span class="name">Bluetooth</span><button class="sw'+(on?' on':'')+'" data-bt aria-label="Bluetooth"></button></div></div>';
     if(on){
       h+='<div class="cap" style="margin-top:-12px">This iPad is discoverable as “iPad (9)” while Bluetooth Settings is open.</div>'+
-        '<div class="hd">My Devices</div><div class="card"><div class="row click" tabindex="0" data-btdev><span class="name">CW-TWS2</span><span class="val">Not Connected</span><button class="info" data-btdev aria-label="Info">i</button></div></div>'+
-        '<div class="hd" style="display:flex;gap:10px;align-items:center;margin-top:30px">Other Devices <i class="spin" style="width:16px;height:16px;margin:0"></i></div>';
+        '<div class="hd">My Devices</div><div class="card"><div class="row click" tabindex="0" data-btdev><span class="name">CW-TWS2</span><span class="val">Not Connected</span><button class="info" data-btdev aria-label="Info">i</button></div>'+
+        BTD.filter(function(d){return btConn[d]}).map(function(d){return '<div class="row click" tabindex="0" data-btd="'+d+'"><span class="name">'+d+'</span><span class="val">Connected</span><button class="info" data-btd="'+d+'" aria-label="Info">i</button></div>'}).join('')+'</div>'+
+        '<div class="hd" style="display:flex;gap:10px;align-items:center;margin-top:30px">Other Devices <i class="spin" style="width:16px;height:16px;margin:0"></i></div>'+
+        '<div class="card">'+BTD.filter(function(d){return !btConn[d]}).map(function(d){return '<div class="row click" tabindex="0" data-btd="'+d+'"><span class="name">'+d+'</span></div>'}).join('')+'</div>';
     }else if(airplane){
       h+='<div class="cap" style="margin-top:-12px">Airplane Mode turned Bluetooth off.</div>';
     }
@@ -992,6 +995,12 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(t.closest('[data-air]')){airplane=!airplane;toast(airplane?'Airplane Mode on':'Airplane Mode off','Airplane');renderAll();return}
     if(t.closest('[data-wifi]')){if(airplane)toast('Turn off Airplane Mode first','Airplane');else wifiOn=!wifiOn;renderAll();return}
     if(t.closest('[data-bt]')){if(airplane)toast('Turn off Airplane Mode first','Airplane');else btOn=!btOn;renderAll();return}
+    var bd=t.closest('[data-btd]');
+    if(bd){
+      var dn=bd.getAttribute('data-btd');
+      if(dn==='Galaxy A54'){alertBox('Pairing Unsuccessful','Unable to connect to “'+dn+'”. Make sure the device is turned on and in range.',[{t:'OK',b:1}]);return}
+      btConn[dn]=!btConn[dn];renderPane();toast(btConn[dn]?'Connected to “'+dn+'”':'Disconnected from “'+dn+'”','Bluetooth');return;
+    }
     if(t.closest('[data-btdev]')){toast('CW-TWS2 is out of range','Bluetooth');return}
     if(t.closest('[data-tt]')){trueTone=!trueTone;applyDisplay();renderAll();return}
     if(t.closest('[data-ns]')){nightShift=!nightShift;applyDisplay();renderAll();toast(nightShift?'Night Shift on':'Night Shift off','Display');return}
