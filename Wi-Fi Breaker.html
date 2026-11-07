@@ -28,6 +28,8 @@ button:focus-visible,input:focus-visible,.row:focus-visible{outline:2px solid va
 .app{display:flex;height:100%;gap:0;min-width:0;padding-top:30px}
 .status{position:absolute;left:0;right:0;top:0;height:30px;background:linear-gradient(90deg,var(--side) 0 272px,var(--bg) 272px);display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:13px;font-weight:600;pointer-events:none;z-index:2}
 .status .r{display:flex;gap:8px;align-items:center}
+#fs{pointer-events:auto;width:30px;height:24px;display:grid;place-items:center;border-radius:8px;opacity:.85}#fs:active{background:#2c2c2e}
+.sh-top{position:sticky;top:-16px;z-index:5;padding-top:16px;margin-top:-16px}
 .batt{background:#fff;color:#000;border-radius:7px;padding:0 6px;font-size:12px;font-weight:700;line-height:17px;min-width:30px;text-align:center}
 .batt.low{background:var(--red);color:#fff}
 
@@ -117,7 +119,7 @@ button.me:hover{background:#15171b}
 .mono{font-family:var(--mono);letter-spacing:.08em}
 
 /* sheet */
-.dim{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:10;animation:fade .2s}
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:max(40px,6vh) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:10;animation:fade .2s}
 .sheet{background:#1c1c1e;width:min(490px,100%);max-height:100%;overflow-y:auto;border-radius:34px;padding:16px 26px 28px;position:relative;animation:rise .28s cubic-bezier(.2,.9,.3,1)}
 @keyframes fade{from{opacity:0}}@keyframes rise{from{transform:translateY(40px);opacity:0}}
 .sh-top{display:flex;justify-content:space-between;margin:0 -12px}
@@ -144,8 +146,35 @@ button.me:hover{background:#15171b}
 .legend{display:flex;gap:14px;margin:12px 6px 0;font-size:12px;color:var(--dim);flex-wrap:wrap}
 .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
 .alert{background:#3a1d1b;color:#ffb4ae;border-radius:16px;padding:12px 14px;margin-top:14px;font-size:14px;line-height:1.4}
-.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:#3a3a3c;padding:12px 20px;border-radius:24px;opacity:0;pointer-events:none;transition:.25s;z-index:20;font-size:15px;max-width:calc(100% - 32px);text-align:center}
-.toast.show{opacity:1;transform:translate(-50%,0)}
+.banner{position:fixed;top:34px;left:50%;width:min(430px,calc(100% - 24px));transform:translate(-50%,-160%);background:rgba(44,44,46,.94);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-radius:28px;padding:12px 16px;display:flex;gap:12px;align-items:center;z-index:60;transition:transform .5s cubic-bezier(.2,.9,.3,1.12);box-shadow:0 10px 34px rgba(0,0,0,.55),0 0 0 .5px rgba(255,255,255,.12);pointer-events:none}
+.banner.show{transform:translate(-50%,0)}
+.banner .bi{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;flex:none}.banner .bi svg{width:22px;height:22px}
+.banner b{display:block;font-size:15px}.banner .bm{font-size:14px;color:#e5e5ea;line-height:1.3}.banner time{margin-left:auto;font-size:13px;color:var(--dim);align-self:flex-start;padding-left:8px}
+.alertdim{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;z-index:70;animation:fade .15s}
+.ios-alert{width:min(300px,calc(100% - 40px));background:rgba(44,44,46,.97);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);border-radius:28px;text-align:center;overflow:hidden;animation:pop .22s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{transform:scale(1.12);opacity:0}}
+.ios-alert .ab{padding:22px 18px 18px}.ios-alert h4{margin:0 0 6px;font-size:17px;font-weight:600}.ios-alert p{margin:0;font-size:13.5px;line-height:1.35}
+.abs{display:flex;border-top:.5px solid rgba(255,255,255,.18)}.abs.col{flex-direction:column}
+.abtn{flex:1;padding:14px 8px;font-size:17px;color:var(--blue);border-left:.5px solid rgba(255,255,255,.18)}.abtn:first-child{border-left:0}.abs.col .abtn{border-left:0;border-top:.5px solid rgba(255,255,255,.18)}.abs.col .abtn:first-child{border-top:0}
+.abtn.bold{font-weight:600}.abtn.red{color:var(--red)}.abtn:active{background:rgba(255,255,255,.1)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 4px 0}.chip{background:#2c2c2e;border-radius:14px;padding:5px 10px;font-size:12.5px;color:var(--dim);font-weight:600}
+.gsep{color:var(--dim);font-size:13px;font-weight:600;margin:22px 8px 8px;letter-spacing:.02em;text-transform:uppercase}
+.seg{display:flex;background:#2c2c2e;border-radius:18px;padding:3px}.seg button{flex:1;padding:8px;border-radius:15px;font-size:15px;font-weight:600;color:#c7c7cc}.seg button.on{background:#636366;color:#fff}.seg button:disabled{opacity:.55;cursor:default}
+.term{background:#0b0b0d;border-radius:18px;margin:12px 0 0;padding:6px 14px;font-family:var(--mono);font-size:12.5px}
+.term div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px solid #1c1c1e}.term div:first-child{border-top:0}.term span{color:var(--dim)}.term b{font-weight:500;color:#d1f7dc;text-align:right;overflow-wrap:anywhere}
+.warn{color:var(--orange)}
+.pw.run{color:#8fe3a9}
+.btn:disabled{background:var(--field);color:#6a6a6e;cursor:default}
+.rng{-webkit-appearance:none;appearance:none;flex:1;height:8px;border-radius:4px;background:linear-gradient(to right,#fff var(--p,100%),#5a5a5e var(--p,100%));outline:0;margin:0}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.rng::-moz-range-thumb{width:30px;height:30px;border:0;border-radius:50%;background:#fff}
+.ntxt{width:100%;min-height:320px;background:none;border:0;color:#fff;font:inherit;font-size:18px;line-height:1.45;resize:vertical;outline:0}
+.batt.lpm{background:#ffd60a;color:#000}
+body.bold{font-weight:600}
+body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{display:none}body.fsmode .status{justify-content:flex-end}body.fsmode .app{padding-top:62px}
+#dimmer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:200}
+#tint{position:fixed;inset:0;background:#fff1dc;mix-blend-mode:multiply;pointer-events:none;z-index:199}
+.lockscr h1{font-weight:300}
 
 @media (max-width:760px){
   .side{display:none}
@@ -163,11 +192,13 @@ button.me:hover{background:#15171b}
 </style>
 
 <div class="app">
-  <div class="status"><span id="clock"></span><span class="r"><span id="wf"></span><span class="batt" id="batt">34</span></span></div>
+  <div class="status"><span id="clock"></span><span class="r"><button id="fs" aria-label="Full screen" title="На весь екран"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button><span id="wf"></span><span class="batt" id="batt">34</span></span></div>
   <aside class="side" id="side"></aside>
   <main class="main"><div class="mnav" id="mnav"></div><div class="wrap" id="pane"></div></main>
 </div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="banner" id="toast" role="status" aria-live="polite"><span class="bi" id="bico"></span><div><b id="btitle"></b><span class="bm" id="bmsg"></span></div><time>now</time></div>
+<div id="tint"></div><div id="dimmer"></div>
+<div class="chgscr" id="lockscr" aria-hidden="true"><div id="lkt" style="font-size:96px;font-weight:300;letter-spacing:-.02em"></div><div class="pct" style="font-size:15px">Тапни, щоб розбудити</div></div>
 <div class="chgscr" id="chgscr" aria-hidden="true">
   <svg width="132" height="68" viewBox="0 0 110 56" fill="none"><rect x="2" y="2" width="94" height="52" rx="15" stroke="#fff" stroke-width="3.5"/><rect x="100" y="18" width="7" height="20" rx="3" fill="#fff"/><rect id="cfill" x="8" y="8" width="40" height="40" rx="10" fill="#30d158"/></svg>
   <div class="pct" id="cpct"></div><div class="pct" style="font-size:14px">Заряджається</div>
@@ -205,24 +236,42 @@ button.me:hover{background:#15171b}
     gen:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="9"/></svg>',
     acc:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="8" r="1" fill="#fff"/><path d="M7.5 10.5h9M12 11v4M10 19l2-4 2 4"/></svg>',
     app:'<svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg>',
+    note:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6zM9 11h7M9 15h7"/></svg>',
+    disp:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg>',
     pen:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 19l1-4L17 4l3 3L9 18z"/></svg>'
   };
 
   /* ---------- game state ---------- */
+  /* ---------- game state ---------- */
+  var CS={d:'0123456789',ld:'abcdefghijklmnopqrstuvwxyz0123456789',Ld:'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',Lds:'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*?'};
+  var CSN={d:'цифри 0–9',ld:'a–z, 0–9',Ld:'a–z, A–Z, 0–9',Lds:'a–z, A–Z, 0–9, !@#$%&*?'};
+  var COMMON={Euphoria:['1234','0000','1111'],Euphoria1:['123456','111111','000000'],k35:['qwerty','abc123','hello1']};
+  var WORDS=['password','qwerty','letmein','admin123','iloveyou','welcome1','dragon','monkey12','sunshine','football'];
   var DEFS=[
-    {name:'Euphoria',len:4,signal:3,secs:8},
-    {name:'Euphoria1',len:4,signal:2,secs:12},
-    {name:'k35',len:5,signal:3,secs:18},
-    {name:'TANY',len:5,signal:2,secs:25},
-    {name:'TP-Link_254E',len:6,signal:2,secs:40}
+    {name:'Euphoria',len:4,signal:3,secs:10,sec:'WEP',cs:'d',lvl:1},
+    {name:'Euphoria1',len:6,signal:2,secs:25,sec:'WPA Personal',cs:'d',lvl:2},
+    {name:'k35',len:6,signal:3,secs:45,sec:'WPA2 Personal',cs:'ld',lvl:3},
+    {name:'TANY',len:8,signal:2,secs:80,sec:'WPA2 Personal',cs:'Ld',lvl:4},
+    {name:'TP-Link_254E',len:9,signal:2,secs:130,sec:'WPA3 Personal',cs:'Lds',lvl:5},
+    {name:'OSVITLA STUDENT-education',len:8,signal:3,secs:60,sec:'WPA2 Personal',cs:'ld',lvl:3},
+    {name:'OSVITLA ACADEMY-shevchenco',len:10,signal:3,secs:110,sec:'WPA2 Personal',cs:'Ld',lvl:5},
+    {name:'Kyiv_Net_5G',len:12,signal:1,secs:200,sec:'WPA3 Personal',cs:'Lds',lvl:6}
   ];
   var nets,connected,battery,view,autoJoin,reveal,joining;
   var page='wifi',charging=false,spent=0,t0=Date.now(),lastCharge=null;
   var airplane=false,wifiOn=true,btOn=true,gsub=null;
-
-  function rndPw(len){var s='';for(var i=0;i<len;i++)s+=Math.floor(Math.random()*10);return s}
-  function resetNet(n){n.password=rndPw(n.len);n.prog=0;n.cracked=false}
-  var acct=null,mem={};
+  var notes=[],noteOpen=null,bright=1,trueTone=true,nightShift=false,lpm=false,boldTxt=false,lockIdx=3,lastAct=Date.now(),lowWarned={20:false,10:false};
+  var LOCKS=[['30 Seconds',30],['1 Minute',60],['2 Minutes',120],['5 Minutes',300],['Never',0]];
+  function ksOf(n){return Math.pow(CS[n.cs].length,n.len)}
+  function rndPw(n){
+    var c=COMMON[n.name];
+    if(c&&Math.random()<0.55)return c[Math.floor(Math.random()*c.length)];
+    var cs=CS[n.cs],s='';
+    for(var i=0;i<n.len;i++)s+=cs[Math.floor(Math.random()*cs.length)];
+    return s;
+  }
+  function resetNet(n){n.password=rndPw(n);n.prog=0;n.cracked=false;n.dictDone=false;n.weak=(COMMON[n.name]||[]).indexOf(n.password)>=0}
+  var acct='Гравець',mail='',mem={};
   var PERSON='<svg width="30" height="30" viewBox="0 0 30 30" fill="#8e8e93"><circle cx="15" cy="11" r="5.5"/><path d="M4 27c1-6 6-9 11-9s10 3 11 9z"/></svg>';
   function ls(k,v,del){
     try{
@@ -236,111 +285,108 @@ button.me:hover{background:#15171b}
     }
     return null;
   }
-  function hs(s){var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return String(h>>>0)}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  /* progress saves by itself, no sign-in needed */
   function save(){
-    if(!acct||!nets)return;
-    ls('wb_save_'+acct,{connected:connected,battery:battery,nets:nets.map(function(n){return {name:n.name,password:n.password,prog:n.prog,cracked:n.cracked}})});
+    if(!nets)return;
+    ls('wb_save2',{notes:notes,name:acct,mail:mail,connected:connected,battery:battery,disp:{b:bright,tt:trueTone,ns:nightShift,lpm:lpm,bold:boldTxt,lk:lockIdx},
+      nets:nets.map(function(n){return {name:n.name,password:n.password,prog:n.prog,cracked:n.cracked,dictDone:n.dictDone}})});
   }
-  function load(name){
+  function load(){
     newGame();
-    var d=ls('wb_save_'+name);
+    var d=ls('wb_save2');
     if(!d||!d.nets)return;
+    if(typeof d.name==='string'&&d.name)acct=d.name;
+    mail=typeof d.mail==='string'?d.mail:'';
+    notes=Array.isArray(d.notes)?d.notes.filter(function(x){return x&&typeof x.text==='string'}):[];
     d.nets.forEach(function(s){
       var n=net(s.name);
-      if(n&&typeof s.password==='string'&&s.password.length===n.len){n.password=s.password;n.prog=s.prog||0;n.cracked=!!s.cracked}
+      if(n&&typeof s.password==='string'&&s.password.length===n.len){
+        n.password=s.password;n.prog=s.prog||0;n.cracked=!!s.cracked;n.dictDone=!!s.dictDone;
+        n.weak=(COMMON[n.name]||[]).indexOf(n.password)>=0;
+      }
     });
     connected=d.connected||'sweet_home';
+    if(connected!=='sweet_home'&&!(net(connected)&&net(connected).cracked))connected='sweet_home';
     battery=typeof d.battery==='number'?d.battery:34;
+    var x=d.disp||{};
+    if(typeof x.b==='number')bright=Math.min(1,Math.max(.1,x.b));
+    trueTone=x.tt!==false;nightShift=!!x.ns;lpm=!!x.lpm;boldTxt=!!x.bold;
+    if(typeof x.lk==='number'&&LOCKS[x.lk])lockIdx=x.lk;
   }
-  function autoLogin(){
-    var c=ls('wb_cur'),users=ls('wb_users')||{};
-    if(c&&users[c]){acct=c;load(c)}
-    window.addEventListener('pagehide',save);
-    renderAll();
+  function applyDisplay(){
+    $('#dimmer').style.opacity=((1-bright)*0.75).toFixed(3);
+    $('#tint').style.background=nightShift?'#ffb878':trueTone?'#fff1dc':'#fff';
+    document.body.classList.toggle('bold',boldTxt);
   }
   function meHtml(){
-    if(!acct)return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av" style="background:#2c2c2e">'+PERSON+'</div><div><b>Sign in</b><small>Увійди в ігровий акаунт, щоб зберігати прогрес</small></div></button>';
-    return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av">'+acct.slice(0,2).toUpperCase()+'</div><div><b>'+acct+'</b><small>Ігровий акаунт · зламано '+cracked()+'/'+nets.length+'</small></div></button>';
+    if(!mail)return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av" style="background:#2c2c2e">'+PERSON+'</div><div><b>Sign in</b><small>Увійди з поштою, щоб відкрити ігровий профіль</small></div></button>';
+    return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av">'+esc(acct.slice(0,2).toUpperCase())+'</div><div><b>'+esc(acct)+'</b><small>'+esc(mail)+' · зламано '+cracked()+'/'+nets.length+'</small></div></button>';
   }
   function openAcct(){
-    var host=$('#sheetHost'),mode='in';
-    function bind(){
-      $('#sx').onclick=closeSheet;
-      $('#dim').addEventListener('mousedown',function(e){if(e.target.id==='dim')closeSheet()});
+    var host=$('#sheetHost');
+    host.innerHTML='<div class="dim" id="dim"><div class="sheet" id="acct" role="dialog" aria-label="Player Name">'+
+      '<div class="sh-top"><button class="round" id="sx" aria-label="Cancel">'+ICON.x+'</button><button class="round ok ready" id="aok" aria-label="Done">'+ICON.check+'</button></div>'+
+      '<div class="sh-wifi"><div class="av" style="width:84px;height:84px;font-size:32px">'+esc(acct.slice(0,2).toUpperCase())+'</div></div>'+
+      '<h3>'+(mail?'Name &amp; Email':'Sign In')+'</h3><div class="sub">Вкажи імʼя та пошту для ігрового профілю. Пароль не потрібен.</div>'+
+      '<input class="pw txt" id="an" type="text" value="'+esc(acct)+'" maxlength="16" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="Name" aria-label="Name">'+
+      '<input class="pw txt" id="am" type="email" value="'+esc(mail)+'" maxlength="60" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="Email" aria-label="Email" style="margin-top:10px">'+
+      '<div class="note">Це лише гра: пошта зберігається тільки в цьому браузері, листи не надсилаються. Краще вигадай адресу, наприклад player@example.com.</div>'+
+      '<div id="amsg"></div></div></div>';
+    $('#sx').onclick=closeSheet;
+    $('#dim').addEventListener('mousedown',function(e){if(e.target.id==='dim')closeSheet()});
+    function submit(){
+      var nm=$('#an').value.trim();
+      if(!/^[\wЀ-ӿ -]{1,16}$/.test(nm)){$('#amsg').innerHTML='<div class="alert">Імʼя: 1–16 символів, літери, цифри, пробіл, _ або -.</div>';return}
+      var em=$('#am').value.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){$('#amsg').innerHTML='<div class="alert">Введи пошту у форматі name@example.com.</div>';return}
+      acct=nm;mail=em;closeSheet();renderAll();toast('Вхід виконано: '+em,'Settings');
     }
-    function drawOut(){
-      var up=mode==='up';
-      host.innerHTML='<div class="dim" id="dim"><div class="sheet" id="acct" role="dialog" aria-label="Sign in">'+
-        '<div class="sh-top"><button class="round" id="sx" aria-label="Close">'+ICON.x+'</button><button class="round ok ready" id="aok" aria-label="Continue">'+ICON.check+'</button></div>'+
-        '<div class="sh-wifi"><div class="av" style="width:84px;height:84px;background:#2c2c2e">'+PERSON.replace('width="30" height="30"','width="54" height="54"')+'</div></div>'+
-        '<h3>'+(up?'Create Account':'Sign In')+'</h3><div class="sub">'+(up?'Створи ігровий акаунт для збереження прогресу.':'Увійди в ігровий акаунт, щоб продовжити гру.')+'</div>'+
-        '<input class="pw txt" id="an" type="text" placeholder="Nickname" maxlength="16" autocomplete="off" aria-label="Nickname">'+
-        '<input class="pw txt" id="ap" type="password" placeholder="Password" autocomplete="off" aria-label="Password" style="margin-top:10px">'+
-        '<div class="note">Це локальний ігровий акаунт. Дані зберігаються тільки в цьому браузері й нікуди не надсилаються. Не вводь справжні паролі.</div>'+
-        '<div id="amsg"></div>'+
-        '<div style="margin-top:18px"><button class="tool" id="amode">'+(up?'У мене вже є акаунт':'Create New Account')+'</button></div></div></div>';
-      bind();
-      $('#aok').onclick=submitAcct;
-      $('#amode').onclick=function(){mode=up?'in':'up';drawOut()};
-      ['#an','#ap'].forEach(function(s){$(s).addEventListener('keydown',function(e){if(e.key==='Enter')submitAcct()})});
-      setTimeout(function(){$('#an').focus()},50);
-    }
-    function submitAcct(){
-      var nm=$('#an').value.trim(),pw=$('#ap').value,msg=$('#amsg');
-      function err(t){msg.innerHTML='<div class="alert">'+t+'</div>'}
-      if(!/^[\wЀ-ӿ-]{2,16}$/.test(nm))return err('Нікнейм: 2–16 символів, літери, цифри, _ або -.');
-      if(pw.length<3)return err('Пароль має містити щонайменше 3 символи.');
-      var users=ls('wb_users')||{};
-      if(mode==='in'){
-        if(!users[nm]||users[nm]!==hs(nm+pw))return err('Невірний нікнейм або пароль.');
-      }else{
-        if(users[nm])return err('Такий нікнейм уже існує.');
-        users[nm]=hs(nm+pw);ls('wb_users',users);
-      }
-      acct=nm;ls('wb_cur',nm);
-      if(mode==='in')load(nm);else newGame();
-      closeSheet();
-      toast(mode==='in'?'З поверненням, '+nm:'Акаунт створено. Прогрес зберігається.');
-    }
-    if(acct){
-      host.innerHTML='<div class="dim" id="dim"><div class="sheet" id="acct" role="dialog" aria-label="Account">'+
-        '<div class="sh-top"><button class="round" id="sx" aria-label="Close">'+ICON.x+'</button><span></span></div>'+
-        '<div class="sh-wifi"><div class="av" style="width:84px;height:84px;font-size:32px">'+acct.slice(0,2).toUpperCase()+'</div></div>'+
-        '<h3>'+acct+'</h3><div class="sub">Ігровий акаунт</div>'+
-        '<div style="background:#2c2c2e;border-radius:22px;padding:4px 16px;margin-bottom:16px"><div class="row"><span class="name">Зламано мереж</span><span class="val">'+cracked()+' / '+nets.length+'</span></div><div class="row"><span class="name">Підключено до</span><span class="val">'+connected+'</span></div><div class="row"><span class="name">Батарея</span><span class="val">'+battery+'%</span></div></div>'+
-        '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="ars">Reset Progress</button><button class="btn ghost" id="aso" style="color:var(--red)">Sign Out</button></div></div></div>';
-      bind();
-      $('#ars').onclick=function(){newGame();closeSheet();toast('Прогрес скинуто')};
-      $('#aso').onclick=function(){save();acct=null;ls('wb_cur',null,true);newGame();closeSheet();toast('Ви вийшли з акаунта')};
-    }else drawOut();
+    $('#aok').onclick=submit;
+    $('#an').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('#am').focus()}});
+    $('#am').addEventListener('keydown',function(e){if(e.key==='Enter')submit()});
+    setTimeout(function(){var a=$('#an');if(a){a.focus();a.select()}},60);
   }
   function newGame(){
-    nets=DEFS.map(function(d){var n={name:d.name,len:d.len,signal:d.signal,secs:d.secs};resetNet(n);return n});
-    connected='sweet_home';battery=34;view=null;autoJoin={};reveal={};
+    nets=DEFS.map(function(d){var n={name:d.name,len:d.len,signal:d.signal,secs:d.secs,sec:d.sec,cs:d.cs,lvl:d.lvl};resetNet(n);return n});
+    connected='sweet_home';battery=34;view=null;autoJoin={};reveal={};lowWarned={20:false,10:false};
   }
   function net(name){return nets.filter(function(n){return n.name===name})[0]}
   function cracked(){return nets.filter(function(n){return n.cracked}).length}
   function connect(name,msg){
     joining=name;renderAll();
-    setTimeout(function(){joining=null;connected=name;renderAll();toast(msg)},1100);
+    setTimeout(function(){joining=null;connected=name;renderAll();toast(msg,'Wi-Fi')},1100);
   }
-
-  /* ---------- evaluate guess (Mastermind) ---------- */
-  function evaluate(secret,guess){
-    var gr=0,left={},gl=[];
-    for(var i=0;i<secret.length;i++){
-      if(secret[i]===guess[i])gr++;
-      else{left[secret[i]]=(left[secret[i]]||0)+1;gl.push(guess[i])}
-    }
-    var or=0;
-    gl.forEach(function(c){if(left[c]>0){or++;left[c]--}});
-    return {gr:gr,or:or};
-  }
-
   /* ---------- rendering ---------- */
-  function toast(msg){
-    var t=$('#toast');t.textContent=msg;t.classList.add('show');
-    clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show')},2600);
+  /* ---------- iOS-style banner + alert ---------- */
+  var TI={'Wi-Fi':['#0a84ff',null],Battery:['#30d158','bat'],Airplane:['#ff9500','plane'],Bluetooth:['#0a84ff','bt'],Display:['#0a84ff','disp'],Settings:['#8e8e93','gen']};
+  function toast(msg,title){
+    title=title||'Settings';
+    var ti=TI[title]||TI.Settings;
+    $('#bico').style.background=ti[0];
+    $('#bico').innerHTML=ti[1]?S[ti[1]]:wifi(3,22);
+    $('#btitle').textContent=title;$('#bmsg').textContent=msg;
+    var t=$('#toast');t.classList.add('show');
+    clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show')},3400);
+  }
+  function alertBox(title,msg,btns){
+    var old=$('#ialert');if(old)old.remove();
+    var d=document.createElement('div');d.className='alertdim';d.id='ialert';
+    d.innerHTML='<div class="ios-alert" role="alertdialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="ab"><h4>'+esc(title)+'</h4><p>'+esc(msg)+'</p></div>'+
+      '<div class="abs'+(btns.length>2?' col':'')+'">'+btns.map(function(b,i){return '<button class="abtn'+(b.b?' bold':'')+(b.red?' red':'')+'" data-i="'+i+'">'+esc(b.t)+'</button>'}).join('')+'</div></div>';
+    document.body.appendChild(d);
+    Array.prototype.forEach.call(d.querySelectorAll('.abtn'),function(el){
+      el.onclick=function(e){e.stopPropagation();var b=btns[+el.getAttribute('data-i')];d.remove();if(b.fn)b.fn()};
+    });
+  }
+  function lowCheck(){
+    if(charging)return;
+    if(battery<=10&&!lowWarned[10]){lowWarned[10]=true;lowWarned[20]=true;alertBox('Low Battery','10% of battery remaining.',[{t:'Close',b:1}])}
+    else if(battery<=20&&!lowWarned[20]){
+      lowWarned[20]=true;var b=[{t:'Close'}];
+      if(!lpm)b.push({t:'Low Power Mode',b:1,fn:function(){lpm=true;renderAll()}});
+      alertBox('Low Battery','20% of battery remaining.',b);
+    }
   }
   function renderStatus(){
     var d=new Date();
@@ -349,7 +395,7 @@ button.me:hover{background:#15171b}
     $('#wf').innerHTML=airplane?'<span class="pl">'+S.plane+'</span>':(wifiOn?wifi(3,17):'');
     var b=$('#batt');
     b.innerHTML=(charging?'<svg width="8" height="12" viewBox="0 0 8 12" fill="#000"><path d="M5 0L0 7h3l-1 5 6-7H4z"/></svg>':'')+battery;
-    b.className='batt'+(charging?' chg':battery<=10?' low':'');
+    b.className='batt'+(charging?' chg':lpm?' lpm':battery<=10?' low':'');
   }
   function renderSide(){
     var wfv=(airplane||!wifiOn)?'Off':connected;
@@ -362,11 +408,13 @@ button.me:hover{background:#15171b}
       ['#30d158',S.bat,'Battery',charging?'Charging':battery+'%'],
       null,
       ['#8e8e93',S.gen,'General',''],
+      ['#0a84ff',S.disp,'Display & Brightness',''],
       ['#0a84ff',S.acc,'Accessibility',''],
       ['#111',S.app,'Appearance',''],
-      ['#8e8e93',S.pen,'Apple Pencil','']
+      ['#8e8e93',S.pen,'Apple Pencil',''],
+      ['#ffb800',S.note,'Notes',notes.length?String(notes.length):'']
     ];
-    var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general'};
+    var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general','Display & Brightness':'display',Notes:'notes'};
     var h='<div class="sthead"><div class="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M12 12l5 5"/></svg>Search</div></div>'+
       meHtml()+'<div class="gap"></div>';
     items.forEach(function(it){
@@ -378,8 +426,8 @@ button.me:hover{background:#15171b}
       h+='<div class="sitem'+(on?' on':'')+'"'+(pg?' data-page="'+pg+'" tabindex="0"':'')+'>'+sIco(it[0],icon)+'<span>'+it[2]+'</span><span class="v">'+val+'</span></div>';
     });
     $('#side').innerHTML=h;
-    var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
-      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+(acct?acct:'Sign in')+'</button><button data-air'+(airplane?' class="on"':'')+'>Літак</button>';
+    var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General'],['display','Display'],['notes','Notes']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
+      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+(mail?esc(acct):'Sign in')+'</button><button data-air'+(airplane?' class="on"':'')+'>Літак</button>';
     $('#mnav').innerHTML=mn;
   }
   var CHEV='<svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="#6b6b70" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l6 6-6 6"/></svg>';
@@ -442,18 +490,16 @@ button.me:hover{background:#15171b}
     p.innerHTML=h;
   }
   function renderAccount(p){
-    var done=cracked(),ini=acct.slice(0,2).toUpperCase();
+    var done=cracked(),ini=esc(acct.slice(0,2).toUpperCase());
     var mins=Math.max(1,Math.round((Date.now()-t0)/60000));
-    var h='<div style="text-align:center;font-weight:600;margin:-18px 0 22px">Player Account</div>'+
+    var h='<div style="text-align:center;font-weight:600;margin:-18px 0 22px">Player Profile</div>'+
       '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:34px">'+
       '<div class="av" style="width:150px;height:150px;font-size:56px">'+ini+'</div>'+
-      '<div style="font-size:34px;font-weight:700;margin-top:12px;overflow-wrap:anywhere;text-align:center">'+acct+'</div>'+
-      '<div style="color:var(--dim);font-size:20px">Ігровий акаунт</div></div>'+
-      '<div class="card">'+
-        grow('#8e8e93',ig('M4 6h16v12H4zM8 11a1.5 1.5 0 1 0 0 .01M13 10h4M13 14h4'),'Player Information','x')+
-        grow('#8e8e93',ig('M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z'),'Sign-In &amp; Security','x')+
+      '<div style="font-size:34px;font-weight:700;margin-top:12px;overflow-wrap:anywhere;text-align:center">'+esc(acct)+'</div>'+
+      '<div style="color:var(--dim);font-size:20px">Ігровий профіль</div></div>'+
+      '<div class="card"><div class="row click" tabindex="0" data-rename><span class="name">Name</span><span class="val">'+esc(acct)+'</span>'+CHEV+'</div>'+
+        '<div class="row click" tabindex="0" data-rename><span class="name">Email</span><span class="val">'+esc(mail)+'</span>'+CHEV+'</div>'+
         grow('#8e8e93',ig('M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3M12 13v4M8 20h8'),'Achievements','x')+
-        grow('#8e8e93',ig('M12 7v5l3 2M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0'),'Play History','x')+
       '</div>'+
       '<div class="card">'+
         grow('#0a84ff',wifi(3,20),'Cracked Networks','x',done+' / '+nets.length)+
@@ -461,8 +507,41 @@ button.me:hover{background:#15171b}
         grow('#30d158',S.bat,'Battery','x',battery+'%')+
         grow('#8e8e93',ig('M12 7v5l3 2M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0'),'Session','x',mins+' min')+
       '</div>'+
-      '<div class="card"><div class="row click" tabindex="0" data-reset><span class="link">Reset Progress</span></div>'+
+      '<div class="cap" style="margin-top:-8px">Профіль і прогрес зберігаються лише в цьому браузері. Пошта тут для вигляду, листи не надсилаються.</div>'+
+      '<div class="card"><div class="row click" tabindex="0" data-reset><span style="color:var(--red)">Reset Progress</span></div>'+
       '<div class="row click" tabindex="0" data-signout><span style="color:var(--red)">Sign Out</span></div></div>';
+    p.innerHTML=h;
+  }
+  function nTitle(n){var l=n.text.trim().split('\n')[0];return l||'Нова нотатка'}
+  function nBody(n){var a=n.text.trim().split('\n').slice(1).join(' ').trim();return a||'Без додаткового тексту'}
+  function nDate(t){var d=new Date(t);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' · '+d.getDate()+'.'+('0'+(d.getMonth()+1)).slice(-2)}
+  function renderNotes(p){
+    var cur2=notes.filter(function(x){return x.id===noteOpen})[0];
+    if(noteOpen!==null&&cur2){
+      p.innerHTML='<div class="top"><button class="round" data-nback aria-label="Back">'+ICON.back+'</button><h2>Note</h2></div>'+
+        '<div class="card" style="padding:14px 18px"><textarea class="ntxt" id="nt" placeholder="Пиши тут: паролі, підказки, ідеї…" aria-label="Note">'+esc(cur2.text)+'</textarea></div>'+
+        '<div class="card"><div class="row click" tabindex="0" data-ndel><span style="color:var(--red)">Delete Note</span></div></div>';
+      return;
+    }
+    var h='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Notes</h2></div>'+
+      '<div class="editrow"><button class="btn" data-nnew>＋ New Note</button></div>';
+    if(!notes.length)h+='<div class="card" style="padding:26px 18px;text-align:center;color:var(--dim)">Нотаток ще немає. Запиши підказки до паролів або свої плани.</div>';
+    else h+='<div class="card">'+notes.map(function(n){return '<div class="row click" tabindex="0" data-nopen="'+n.id+'" style="min-height:66px"><span class="name"><b>'+esc(nTitle(n))+'</b><br><span style="color:var(--dim);font-size:14px">'+nDate(n.t)+'  '+esc(nBody(n)).slice(0,60)+'</span></span>'+CHEV+'</div>'}).join('')+'</div>';
+    p.innerHTML=h;
+  }
+  function renderDisplay(p){
+    var sun='<svg width="%s" height="%s" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg>';
+    var pc=Math.round(bright*100);
+    var h='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Display &amp; Brightness</h2></div>'+
+      '<div class="hd">Brightness</div><div class="card"><div class="row" style="gap:14px;min-height:64px">'+sun.replace(/%s/g,'16')+
+      '<input class="rng" id="brt" type="range" min="10" max="100" value="'+pc+'" style="--p:'+pc+'%" aria-label="Brightness">'+sun.replace(/%s/g,'26')+'</div>'+
+      '<div class="row"><span class="name">True Tone</span><button class="sw'+(trueTone?' on':'')+'" data-tt aria-label="True Tone"></button></div></div>'+
+      '<div class="cap">Automatically adapt iPad display based on ambient lighting conditions to make colours appear consistent in different environments.</div>'+
+      '<div class="card"><div class="row"><span class="name">Night Shift</span><button class="sw'+(nightShift?' on':'')+'" data-ns aria-label="Night Shift"></button></div></div>'+
+      '<div class="cap">Warms the display colours, so it is easier on the eyes at night.</div>'+
+      '<div class="card"><div class="row click" tabindex="0" data-al><span class="name">Auto-Lock</span><span class="val">'+LOCKS[lockIdx][0]+'</span>'+CHEV+'</div></div>'+
+      '<div class="cap">Екран гасне після паузи в діях (не під час підбору пароля). Тапни, щоб змінити час.</div>'+
+      '<div class="hd">Text</div><div class="card"><div class="row"><span class="name">Bold Text</span><button class="sw'+(boldTxt?' on':'')+'" data-bold aria-label="Bold Text"></button></div></div>';
     p.innerHTML=h;
   }
   function netRow(n){
@@ -478,12 +557,14 @@ button.me:hover{background:#15171b}
     if(page==='battery'){renderBattery(p);return}
     if(page==='bluetooth'){renderBluetooth(p);return}
     if(page==='general'){renderGeneral(p);return}
-    if(page==='account'&&acct){renderAccount(p);return}
+    if(page==='display'){renderDisplay(p);return}
+    if(page==='notes'){renderNotes(p);return}
+    if(page==='account'){renderAccount(p);return}
     if(view){renderDetail(p);return}
     var all=cracked()===nets.length;
     var everyone=[{name:'sweet_home',signal:3}].concat(nets);
     var cn=everyone.filter(function(n){return n.name===connected})[0];
-    var h='<div class="editrow"><button class="editbtn" data-gsub="x">Edit</button></div><div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(acct?acct:'Sign in')+'</button></div>';
+    var h='<div class="editrow"><button class="editbtn" data-gsub="x">Edit</button></div><div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(mail?esc(acct):'Sign in')+'</button></div>';
     if(all)h+='<div class="win"><h3>Усі мережі зламано</h3><p>Це лише гра: паролі випадкові, справжніх мереж тут немає. Спробуй ще раз із новими кодами.</p><button class="btn" data-again>Грати знову</button></div>';
     h+='<div class="card"><div class="hero"><div class="big">'+wifi(3,38)+'</div><h1>Wi-Fi</h1>'+
       '<p>Connect to Wi-Fi, view available networks, and manage settings for joining networks and nearby hotspots. <span class="link">Learn more…</span></p></div>'+
@@ -493,7 +574,7 @@ button.me:hover{background:#15171b}
     var saved=everyone.filter(function(n){return n.name!==connected&&(n.name==='sweet_home'||n.cracked)});
     var other=nets.filter(function(n){return n.name!==connected&&!n.cracked});
     if(saved.length)h+='<div class="hd">My Networks</div><div class="card">'+saved.map(netRow).join('')+'</div>';
-    h+='<div class="hd">Other Networks</div><div class="card">'+other.map(netRow).join('')+'<div class="row pad"><span class="name">Other…</span></div></div><div class="cap" style="margin-top:-8px">Гра: тапни мережу, щоб підібрати пароль. Паролі випадкові, справжніх мереж тут немає.</div>';
+    h+='<div class="hd">Other Networks</div><div class="card">'+other.map(netRow).join('')+'<div class="row pad"><span class="name">Other…</span></div></div>';
     p.innerHTML=h;
   }
   var chgT=null;
@@ -509,7 +590,7 @@ button.me:hover{background:#15171b}
   function hhmm(){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
   function chargeTick(){
     if(!charging||battery>=100)return;
-    battery++;lastCharge={to:battery,t:hhmm()};updateChargeScr();
+    battery++;if(battery>20)lowWarned[20]=false;if(battery>10)lowWarned[10]=false;lastCharge={to:battery,t:hhmm()};updateChargeScr();
     renderStatus();renderSide();
     if(cur&&battery<=3)updateSheet();
     if(page==='battery'&&!cur)renderPane();
@@ -526,8 +607,9 @@ button.me:hover{background:#15171b}
       '<div style="color:'+(charging?'var(--green)':'var(--dim)')+';margin:2px 0 12px;font-weight:600">'+state+'</div>'+
       '<div class="bar'+(charging?' chg':'')+'"><i style="width:'+battery+'%"></i></div>'+
       '<div style="margin-top:12px;font-size:15px"><b>Last Charged to '+(lastCharge?lastCharge.to+'%':'69%')+':</b> <span style="color:var(--dim)">'+(lastCharge?lastCharge.t:'16:06')+'</span></div></div>'+
-      '<div class="card"><div class="row"><span class="name">Charger</span><button class="sw'+(charging?' on':'')+'" data-chg aria-label="Charger"></button></div></div>'+
-      '<div class="cap">Підключи зарядку, щоб батарея відновлювалась: +1% приблизно кожні секунду. На 0% підбір зупиняється, поки не зарядиш пристрій.</div>'+
+      '<div class="card"><div class="row"><span class="name">Charger</span><button class="sw'+(charging?' on':'')+'" data-chg aria-label="Charger"></button></div>'+
+      '<div class="row"><span class="name">Low Power Mode</span><button class="sw'+(lpm?' on':'')+'" data-lpm aria-label="Low Power Mode"></button></div></div>'+
+      '<div class="cap">Підключи зарядку, щоб батарея відновлювалась: +1% приблизно кожні секунду. На 0% підбір зупиняється, поки не зарядиш пристрій. Low Power Mode вдвічі зменшує витрату.</div>'+
       '<div class="hd">Daily Usage</div><div class="card" style="padding:16px 18px">'+
       '<div style="font-size:17px;font-weight:600;line-height:1.35;padding-bottom:14px;border-bottom:1px solid var(--sep)">'+(spent>40?'Сьогодні ти витрачаєш більше батареї, ніж зазвичай.':'You’re using a similar amount of battery today as you usually do by '+hhmm()+'.')+'</div>'+
       '<div class="stat"><div><small>Average</small><b>53<i>%</i></b></div><div><small style="color:var(--blue)">Today</small><b style="color:var(--blue)">'+today+'<i>%</i></b></div></div>'+
@@ -549,81 +631,135 @@ button.me:hover{background:#15171b}
       '<div class="row click" data-pw><span class="name">Password</span><span class="val '+(shown&&known?'mono':'')+'">'+
         (known?(shown?pw:'●●●●●●●●'):'Невідомо')+'</span></div></div>'+
       '<div class="cap">'+(known?'Тапни рядок Password, щоб показати або сховати пароль.':'Пароль ще не зламано. Відкрий Join та підбери код.')+'</div>'+
-      '<div class="card"><div class="row"><span class="name">Security</span><span class="val">WPA2 Personal</span></div>'+
-      '<div class="row"><span class="name">Довжина коду</span><span class="val">'+(home?8:n.len)+' цифр</span></div>'+
+      '<div class="card"><div class="row"><span class="name">Security</span><span class="val">'+(home?'WPA2 Personal':n.sec)+'</span></div>'+
+      '<div class="row"><span class="name">Довжина пароля</span><span class="val">'+(home?8:n.len)+' симв.</span></div>'+
+      (home?'':'<div class="row"><span class="name">Складність</span><span class="val">Рівень '+n.lvl+' з 6</span></div><div class="row"><span class="name">Символи</span><span class="val">'+CSN[n.cs]+'</span></div>')+
       '<div class="row"><span class="name">Сигнал</span><span class="val">'+['','слабкий','середній','сильний'][n?n.signal:3]+'</span></div>'+
       '<div class="row"><span class="name">Wi-Fi Type</span><span class="val">Wi-Fi 5 (802.11ac)</span></div></div>';
     p.innerHTML=h;
   }
 
-  /* ---------- join sheet: password cracking takes time ---------- */
-  var cur=null,crackTimer=null,cracking=false,drainAcc=0,lastB=-1;
-  var STAGES=['Пошук мережі та handshake','Перехоплення пакетів','Підбір за словником','Перебір комбінацій','Перевірка збігу'];
+  /* ---------- join sheet: type a password or run an attack ---------- */
+  var cur=null,crackTimer=null,cracking=false,drainAcc=0,lastB=-1,mode='brute',dp=0,lockLeft=0,wasC=false;
+  var STB=['Сканування каналу','Перехоплення handshake','Збір пакетів','Перебір ключів','Перевірка збігу'];
+  var STD=['Сканування каналу','Перехоплення handshake','Перевірка за словником'];
+  function fnum(x){
+    if(x<10000)return String(Math.floor(x)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+    var e=Math.floor(Math.log10(x));return (x/Math.pow(10,e)).toFixed(1)+'e'+e;
+  }
+  function lvlColor(l){return l<=2?'#30d158':l<=4?'#ff9f0a':'#ff453a'}
   function openSheet(name){
     var n=net(name);
-    cur=n;cracking=false;drainAcc=0;lastB=-1;
+    cur=n;cracking=false;drainAcc=0;lastB=-1;mode='brute';dp=0;lockLeft=0;wasC=false;
     var host=$('#sheetHost');
-    host.innerHTML='<div class="dim" id="dim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Join '+n.name+'">'+
-      '<div class="sh-top"><button class="round" id="sx" aria-label="Cancel">'+ICON.x+'</button><button class="round ok ready" id="sok" aria-label="Start">'+ICON.check+'</button></div>'+
+    host.innerHTML='<div class="dim" id="dim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Enter password for '+esc(n.name)+'">'+
+      '<div class="sh-top"><button class="round" id="sx" aria-label="Cancel">'+ICON.x+'</button><button class="round ok" id="sok" aria-label="Join">'+ICON.check+'</button></div>'+
       '<div class="sh-wifi">'+bigWifi()+'</div>'+
-      '<h3>Join “'+n.name+'”</h3><div class="sub">Enter the password to join this Wi-Fi network.</div>'+
-      '<div class="pw" id="pw" role="status"></div>'+
-      '<div class="bar" style="margin:16px 6px 0"><i id="pfill" style="width:0"></i></div>'+
+      '<h3>Enter Password</h3><div class="sub">Enter the password for “'+esc(n.name)+'”.</div>'+
+      '<input class="pw" id="pw" type="text" placeholder="Password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="join" aria-label="Password">'+
+      '<div class="chips"><span class="chip" style="color:'+lvlColor(n.lvl)+'">'+n.sec+'</span><span class="chip">Рівень '+n.lvl+'</span><span class="chip">'+n.len+' симв.</span><span class="chip">'+CSN[n.cs]+'</span></div>'+
+      '<div class="gsep">Автоматичний підбір</div>'+
+      '<div class="seg" id="seg"><button data-m="dict">Словник</button><button data-m="brute">Перебір</button></div>'+
+      '<div class="note" id="mnote" style="margin-top:8px"></div>'+
+      '<div class="bar" style="margin:16px 6px 0"><i id="pfill" style="width:0;background:var(--blue)"></i></div>'+
       '<div class="hint"><span id="ptxt"></span><span id="peta"></span></div>'+
+      '<div class="term" id="term"></div>'+
       '<div class="plog" id="plog"></div>'+
-      '<button class="btn" id="go" style="margin-top:18px;width:100%">Почати підбір</button>'+
-      '<div class="note">Підбір займає час: що сильніша мережа, то довше. Він іде, поки це вікно відкрите, і витрачає батарею.</div>'+
+      '<button class="btn" id="go" style="margin-top:14px;width:100%">Почати підбір</button>'+
       '<div id="msg"></div></div></div>';
-    $('#sx').onclick=closeSheet;$('#sok').onclick=toggleCrack;$('#go').onclick=toggleCrack;
+    $('#sx').onclick=closeSheet;$('#sok').onclick=submitPw;$('#go').onclick=toggleCrack;
+    $('#pw').addEventListener('input',updateOk);
+    $('#pw').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitPw()}});
+    Array.prototype.forEach.call(document.querySelectorAll('#seg button'),function(b){
+      b.onclick=function(){if(cracking||cur.cracked)return;mode=b.getAttribute('data-m');updateSheet()};
+    });
     $('#dim').addEventListener('mousedown',function(e){if(e.target.id==='dim')closeSheet()});
     updateSheet();
+  }
+  function updateOk(){
+    var n=cur;if(!n)return;
+    $('#sok').classList.toggle('ready',!cracking&&!n.cracked&&$('#pw').value.length>0);
+  }
+  function submitPw(){
+    var n=cur;if(!n||cracking||n.cracked)return;
+    var el=$('#pw'),v=el.value;if(!v)return;
+    if(v===n.password){n.cracked=true;closeSheet();connect(n.name,'Підключено до «'+n.name+'».')}
+    else{
+      el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');
+      alertBox('Incorrect Password','The password you entered for “'+n.name+'” is incorrect.',[{t:'OK',b:1}]);
+    }
   }
   function toggleCrack(){
     var n=cur;if(!n||n.cracked)return;
     if(cracking){stopCrack();updateSheet();return}
+    if(mode==='dict'&&n.dictDone)return;
     if(battery<=0){updateSheet();return}
     cracking=true;
     crackTimer=setInterval(crackStep,100);
     updateSheet();
   }
   function stopCrack(){cracking=false;clearInterval(crackTimer);crackTimer=null}
+  function finish(n){setTimeout(function(){if(cur===n){closeSheet();connect(n.name,'Підключено до «'+n.name+'». Пароль підібрано.')}},900)}
   function crackStep(){
     var n=cur;if(!n){stopCrack();return}
-    n.prog=Math.min(1,n.prog+0.1/n.secs);
-    drainAcc+=0.1;
-    if(drainAcc>=3){drainAcc=0;battery=Math.max(0,battery-1);spent++}
-    if(battery<=0)stopCrack();
-    if(n.prog>=1){
-      stopCrack();n.cracked=true;updateSheet();
-      setTimeout(function(){if(cur===n){closeSheet();connect(n.name,'Пароль підібрано. Підключено до «'+n.name+'».')}},900);
-      return;
+    var dt=0.1;
+    drainAcc+=dt;
+    if(drainAcc>=(lpm?6:3)){drainAcc=0;battery=Math.max(0,battery-1);spent++;lowCheck()}
+    if(battery<=0){stopCrack();updateSheet();return}
+    if(lockLeft>0){lockLeft=Math.max(0,lockLeft-dt);updateSheet();return}
+    if(mode==='dict'){
+      dp=Math.min(1,dp+dt/(n.secs*0.2));
+      if(dp>=1){
+        stopCrack();
+        if(n.weak){n.cracked=true;updateSheet();finish(n)}else{n.dictDone=true;dp=0;updateSheet()}
+        return;
+      }
+    }else{
+      var before=n.prog;n.prog=Math.min(1,n.prog+dt/n.secs);
+      if(n.sec.indexOf('WPA3')===0){[0.33,0.66].forEach(function(th){if(before<th&&n.prog>=th){lockLeft=5;n.prog=th}})}
+      if(n.prog>=1){stopCrack();n.cracked=true;updateSheet();finish(n);return}
     }
     updateSheet();
   }
   function updateSheet(){
     var n=cur;if(!n)return;
-    var p=n.prog,h='',i;
-    if(p<=0&&!cracking)h='<span class="ph">Password</span>';
-    else for(i=0;i<n.len;i++){
-      var locked=n.cracked||p>=(i+1)/n.len*0.92;
-      h+=locked?'<span class="lk">'+n.password[i]+'</span>':'<span class="sc">'+Math.floor(Math.random()*10)+'</span>';
-    }
-    $('#pw').innerHTML=h;
+    var brute=mode==='brute',p=brute?n.prog:dp,i;
+    var started=cracking||p>0||n.cracked||lockLeft>0;
+    var inp=$('#pw');
+    if(cracking||n.cracked){
+      var v='';
+      if(brute||n.cracked){
+        for(i=0;i<n.len;i++){var locked=n.cracked||p>=(i+1)/n.len*0.92;v+=locked?n.password[i]:CS[n.cs][Math.floor(Math.random()*CS[n.cs].length)]}
+      }else v=WORDS[Math.floor(Math.random()*WORDS.length)];
+      inp.value=v;inp.readOnly=true;inp.classList.add('run');wasC=true;
+    }else if(wasC){inp.value='';inp.readOnly=false;inp.classList.remove('run');wasC=false}
+    updateOk();
+    var ks=brute?ksOf(n):10000,secs=brute?n.secs:n.secs*0.2;
+    var rows=[['Режим',brute?'Перебір':'Словник'],['Безпека',n.sec],['Набір символів',CSN[n.cs]],['Простір ключів',brute?fnum(ks)+' комбінацій':'10 000 слів']];
+    if(started){rows.push(['Швидкість',fnum(ks/secs)+' H/s']);rows.push(['Перебрано',fnum(p*ks)]);rows.push(['Кандидат',n.cracked?n.password:cracking?inp.value:'—'])}
+    $('#term').innerHTML=rows.map(function(r){return '<div><span>'+r[0]+'</span><b>'+esc(r[1])+'</b></div>'}).join('');
     $('#pfill').style.width=(p*100)+'%';
-    var started=p>0||cracking;
-    $('#ptxt').textContent=n.cracked?'Пароль знайдено':(started?Math.floor(p*100)+'%':'Очікування');
-    $('#peta').textContent=n.cracked?'':(started?'Залишилось ~'+Math.ceil((1-p)*n.secs)+' с':'Орієнтовно '+n.secs+' с');
-    var stage=Math.min(STAGES.length-1,Math.floor(p*STAGES.length)),lg='';
-    if(started)for(var s2=0;s2<=stage;s2++)lg+='<div>'+(s2<stage||n.cracked?'✓ ':'› ')+STAGES[s2]+(s2===stage&&!n.cracked?'…':'')+'</div>';
+    $('#ptxt').textContent=n.cracked?'Пароль знайдено':lockLeft>0?'Блокування…':started?Math.floor(p*100)+'%':'Очікування';
+    $('#peta').textContent=n.cracked?'':started?'Залишилось ~'+Math.ceil((1-p)*secs)+' с':'Орієнтовно '+Math.round(secs)+' с';
+    var ST=brute?STB:STD,stage=Math.min(ST.length-1,Math.floor(p*ST.length)),lg='',s2;
+    if(started)for(s2=0;s2<=stage;s2++)lg+='<div>'+(s2<stage||n.cracked?'✓ ':'› ')+ST[s2]+(s2===stage&&!n.cracked?'…':'')+'</div>';
+    if(lockLeft>0)lg+='<div class="warn">⚠ Мережа блокує спроби (WPA3): '+Math.ceil(lockLeft)+' с</div>';
+    if(!brute&&n.dictDone&&!cracking)lg+='<div class="warn">✕ У словнику пароля немає. Спробуй перебір.</div>';
     $('#plog').innerHTML=lg;
-    $('#go').textContent=n.cracked?'Готово':cracking?'Пауза':(p>0?'Продовжити':'Почати підбір');
+    $('#mnote').textContent=brute?'Повний перебір усіх комбінацій: довго, але знаходить будь-який пароль.':'Швидка перевірка популярних паролів: спрацює лише на слабких мережах.';
+    Array.prototype.forEach.call(document.querySelectorAll('#seg button'),function(b){
+      b.classList.toggle('on',b.getAttribute('data-m')===mode);b.disabled=cracking||n.cracked;
+    });
+    var go=$('#go');
+    go.textContent=n.cracked?'Готово':cracking?'Зупинити':(!brute&&n.dictDone)?'Словник вичерпано':(p>0?'Продовжити':'Почати підбір');
+    go.disabled=n.cracked||(!brute&&n.dictDone&&!cracking);
     if(lastB!==battery){lastB=battery;renderStatus();renderSide()}
     var m=battery<=0&&!n.cracked?'<div class="alert">Батарея розряджена. <button class="tool" id="chg" style="margin-left:6px">Підключити зарядку</button></div>':'';
     var msg=$('#msg');
     if(msg.getAttribute('data-s')!==m){
       msg.setAttribute('data-s',m);msg.innerHTML=m;
       var c=$('#chg');
-      if(c)c.onclick=function(){charging=true;showCharge();toast('Зарядку підключено');updateSheet()};
+      if(c)c.onclick=function(){charging=true;showCharge();toast('Charger connected','Battery');updateSheet()};
     }
   }
   function closeSheet(){stopCrack();cur=null;$('#sheetHost').innerHTML='';renderAll()}
@@ -643,43 +779,95 @@ button.me:hover{background:#15171b}
       openSheet(name);return;
     }
     if(t.closest('[data-back]')){view=null;renderPane();return}
-    if(t.closest('[data-acct]')){if(acct){page='account';view=null;gsub=null;renderAll()}else openAcct();return}
-    if(t.closest('[data-air]')){airplane=!airplane;toast(airplane?'Режим польоту увімкнено':'Режим польоту вимкнено');renderAll();return}
-    if(t.closest('[data-wifi]')){if(airplane)toast('Спершу вимкни режим польоту');else wifiOn=!wifiOn;renderAll();return}
-    if(t.closest('[data-bt]')){if(airplane)toast('Спершу вимкни режим польоту');else btOn=!btOn;renderAll();return}
-    if(t.closest('[data-btdev]')){toast('CW-TWS2 поза зоною дії');return}
+    if(t.closest('[data-rename]')){openAcct();return}
+    if(t.closest('[data-nnew]')){var nn={id:Date.now(),text:'',t:Date.now()};notes.unshift(nn);noteOpen=nn.id;renderAll();setTimeout(function(){var a=$('#nt');if(a)a.focus()},50);return}
+    var no=t.closest('[data-nopen]');
+    if(no){noteOpen=+no.getAttribute('data-nopen');renderAll();return}
+    if(t.closest('[data-nback]')){notes=notes.filter(function(x){return x.id!==noteOpen||x.text.trim()});noteOpen=null;renderAll();return}
+    if(t.closest('[data-ndel]')){alertBox('Delete Note?','Нотатку буде видалено.',[{t:'Cancel'},{t:'Delete',red:1,fn:function(){notes=notes.filter(function(x){return x.id!==noteOpen});noteOpen=null;renderAll()}}]);return}
+    if(t.closest('[data-signout]')){mail='';page='wifi';renderAll();toast('Ви вийшли з профілю. Прогрес збережено.','Settings');return}
+    if(t.closest('[data-acct]')){if(!mail){openAcct();return}page='account';view=null;gsub=null;renderAll();return}
+    if(t.closest('[data-air]')){airplane=!airplane;toast(airplane?'Airplane Mode on':'Airplane Mode off','Airplane');renderAll();return}
+    if(t.closest('[data-wifi]')){if(airplane)toast('Спершу вимкни Airplane Mode','Airplane');else wifiOn=!wifiOn;renderAll();return}
+    if(t.closest('[data-bt]')){if(airplane)toast('Спершу вимкни Airplane Mode','Airplane');else btOn=!btOn;renderAll();return}
+    if(t.closest('[data-btdev]')){toast('CW-TWS2 поза зоною дії','Bluetooth');return}
+    if(t.closest('[data-tt]')){trueTone=!trueTone;applyDisplay();renderAll();return}
+    if(t.closest('[data-ns]')){nightShift=!nightShift;applyDisplay();renderAll();toast(nightShift?'Night Shift on':'Night Shift off','Display');return}
+    if(t.closest('[data-bold]')){boldTxt=!boldTxt;applyDisplay();renderAll();return}
+    if(t.closest('[data-al]')){lockIdx=(lockIdx+1)%LOCKS.length;lastAct=Date.now();renderAll();return}
+    if(t.closest('[data-lpm]')){lpm=!lpm;renderAll();toast(lpm?'Low Power Mode on':'Low Power Mode off','Battery');return}
     var gs=t.closest('[data-gsub]');
-    if(gs){var gk=gs.getAttribute('data-gsub');if(gk==='x')toast('Недоступно в грі');else{gsub=gk;renderPane()}return}
+    if(gs){var gk=gs.getAttribute('data-gsub');if(gk==='x')toast('Недоступно в грі','Settings');else{gsub=gk;renderPane()}return}
     if(t.closest('[data-gback]')){gsub=null;renderPane();return}
-    if(t.closest('[data-reset]')){newGame();renderAll();toast('Прогрес скинуто');return}
-    if(t.closest('[data-signout]')){save();acct=null;ls('wb_cur',null,true);newGame();page='wifi';renderAll();toast('Ви вийшли з акаунта');return}
+    if(t.closest('[data-reset]')){
+      alertBox('Reset Progress?','Усі зламані мережі та батарея повернуться до початку. Імʼя збережеться.',[{t:'Cancel'},{t:'Reset',red:1,fn:function(){newGame();renderAll();toast('Прогрес скинуто','Settings')}}]);
+      return;
+    }
     var pgEl=t.closest('[data-page]');
-    if(pgEl){page=pgEl.getAttribute('data-page');view=null;gsub=null;renderAll();return}
-    if(t.closest('[data-chg]')){charging=!charging;if(charging)showCharge();else $('#chgscr').classList.remove('on');toast(charging?'Зарядку підключено':'Зарядку відключено');renderAll();return}
+    if(pgEl){page=pgEl.getAttribute('data-page');view=null;gsub=null;noteOpen=null;notes=notes.filter(function(x){return x.text.trim()});renderAll();return}
+    if(t.closest('[data-chg]')){charging=!charging;if(charging)showCharge();else $('#chgscr').classList.remove('on');toast(charging?'Charger connected':'Charger disconnected','Battery');renderAll();return}
     if(t.closest('[data-again]')){newGame();renderAll();return}
     if(t.closest('[data-auto]')){autoJoin[view]=autoJoin[view]===false;renderPane();return}
     if(t.closest('[data-pw]')){
       var n2=net(view);if(view==='sweet_home'||n2.cracked){reveal[view]=!reveal[view];renderPane()}
-      else toast('Пароль ще невідомий');
+      else toast('Пароль ще невідомий','Wi-Fi');
       return;
     }
     if(t.closest('[data-forget]')){
-      if(view==='sweet_home'){toast('Це твоя домашня мережа, її не забуваємо');return}
-      var n3=net(view);resetNet(n3);if(connected===view)connected='sweet_home';
-      view=null;renderAll();toast('Мережу забуто. Роутер згенерував новий пароль.');
+      if(view==='sweet_home'){alertBox('Cannot Forget Network','«sweet_home» — це твоя домашня мережа.',[{t:'OK',b:1}]);return}
+      var fv=view;
+      alertBox('Forget Wi-Fi Network “'+fv+'”?','Your iPad will no longer join this Wi-Fi network. Роутер згенерує новий пароль.',[{t:'Cancel'},{t:'Forget',red:1,fn:function(){
+        var n3=net(fv);resetNet(n3);if(connected===fv)connected='sweet_home';
+        view=null;renderAll();toast('Мережу забуто','Wi-Fi');
+      }}]);
     }
   });
+  document.addEventListener('input',function(e){
+    if(e.target&&e.target.id==='nt'){var cn=notes.filter(function(x){return x.id===noteOpen})[0];if(cn){cn.text=e.target.value;cn.t=Date.now();save()}return}
+    if(e.target&&e.target.id==='brt'){
+      bright=Math.max(.1,e.target.value/100);e.target.style.setProperty('--p',e.target.value+'%');applyDisplay();save();
+    }
+  });
+  ['pointerdown','keydown','input'].forEach(function(ev){document.addEventListener(ev,function(){lastAct=Date.now()},true)});
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'&&(cur||$('#acct')))closeSheet();
+    if(e.key==='Escape'){
+      var al=$('#ialert');if(al){al.remove();return}
+      if(cur||$('#acct'))closeSheet();
+    }
     if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.row.click,.sitem[data-page]')){e.preventDefault();e.target.click()}
   });
 
   function renderAll(){renderStatus();renderSide();renderPane();save()}
-  newGame();renderAll();
+  function showLock(){
+    var d=new Date();$('#lkt').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+    $('#lockscr').classList.add('on');
+  }
+  setInterval(function(){
+    var lim=LOCKS[lockIdx][1];
+    if(!lim||cur||$('#acct')||$('#ialert')||$('#lockscr').classList.contains('on')||$('#chgscr').classList.contains('on'))return;
+    if(Date.now()-lastAct>lim*1000)showLock();
+  },1000);
+  $('#lockscr').addEventListener('click',function(){this.classList.remove('on');lastAct=Date.now()});
+  function syncFs(){
+    var sa=false;try{sa=!!window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches}catch(e){}
+    document.body.classList.toggle('fsmode',!!(document.fullscreenElement||document.webkitFullscreenElement)||sa);
+  }
+  document.addEventListener('fullscreenchange',syncFs);document.addEventListener('webkitfullscreenchange',syncFs);syncFs();
+  function fsEl(){return document.fullscreenElement||document.webkitFullscreenElement}
+  $('#fs').addEventListener('click',function(e){
+    e.stopPropagation();
+    var d=document.documentElement;
+    try{
+      if(fsEl()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
+      else if(d.requestFullscreen||d.webkitRequestFullscreen){var r=(d.requestFullscreen||d.webkitRequestFullscreen).call(d);if(r&&r.catch)r.catch(function(){toast('Safari не дозволив повний екран. Спробуй: Share → Add to Home Screen.','Settings')})}
+      else toast('Цей браузер не підтримує повний екран. Спробуй: Share → Add to Home Screen.','Settings');
+    }catch(err){toast('Повний екран недоступний тут. Спробуй: Share → Add to Home Screen.','Settings')}
+  });
+  load();applyDisplay();renderAll();
+  window.addEventListener('pagehide',save);
   setInterval(renderStatus,30000);
   setInterval(chargeTick,1200);
   $('#chgscr').addEventListener('click',function(){this.classList.remove('on')});
-  autoLogin();
 })();
 </script>
 

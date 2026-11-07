@@ -27,6 +27,8 @@ button:focus-visible,input:focus-visible,.row:focus-visible{outline:2px solid va
 .app{display:flex;height:100%;gap:0;min-width:0;padding-top:30px}
 .status{position:absolute;left:0;right:0;top:0;height:30px;background:linear-gradient(90deg,var(--side) 0 272px,var(--bg) 272px);display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:13px;font-weight:600;pointer-events:none;z-index:2}
 .status .r{display:flex;gap:8px;align-items:center}
+#fs{pointer-events:auto;width:30px;height:24px;display:grid;place-items:center;border-radius:8px;opacity:.85}#fs:active{background:#2c2c2e}
+.sh-top{position:sticky;top:-16px;z-index:5;padding-top:16px;margin-top:-16px}
 .batt{background:#fff;color:#000;border-radius:7px;padding:0 6px;font-size:12px;font-weight:700;line-height:17px;min-width:30px;text-align:center}
 .batt.low{background:var(--red);color:#fff}
 
@@ -165,8 +167,10 @@ button.me:hover{background:#15171b}
 .rng{-webkit-appearance:none;appearance:none;flex:1;height:8px;border-radius:4px;background:linear-gradient(to right,#fff var(--p,100%),#5a5a5e var(--p,100%));outline:0;margin:0}
 .rng::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.45)}
 .rng::-moz-range-thumb{width:30px;height:30px;border:0;border-radius:50%;background:#fff}
+.ntxt{width:100%;min-height:320px;background:none;border:0;color:#fff;font:inherit;font-size:18px;line-height:1.45;resize:vertical;outline:0}
 .batt.lpm{background:#ffd60a;color:#000}
 body.bold{font-weight:600}
+body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{display:none}body.fsmode .status{justify-content:flex-end}body.fsmode .app{padding-top:62px}
 #dimmer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:200}
 #tint{position:fixed;inset:0;background:#fff1dc;mix-blend-mode:multiply;pointer-events:none;z-index:199}
 .lockscr h1{font-weight:300}
@@ -187,7 +191,7 @@ body.bold{font-weight:600}
 </style>
 
 <div class="app">
-  <div class="status"><span id="clock"></span><span class="r"><span id="wf"></span><span class="batt" id="batt">34</span></span></div>
+  <div class="status"><span id="clock"></span><span class="r"><button id="fs" aria-label="Full screen" title="На весь екран"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button><span id="wf"></span><span class="batt" id="batt">34</span></span></div>
   <aside class="side" id="side"></aside>
   <main class="main"><div class="mnav" id="mnav"></div><div class="wrap" id="pane"></div></main>
 </div>
@@ -231,6 +235,7 @@ body.bold{font-weight:600}
     gen:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="9"/></svg>',
     acc:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="8" r="1" fill="#fff"/><path d="M7.5 10.5h9M12 11v4M10 19l2-4 2 4"/></svg>',
     app:'<svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg>',
+    note:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6zM9 11h7M9 15h7"/></svg>',
     disp:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg>',
     pen:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 19l1-4L17 4l3 3L9 18z"/></svg>'
   };
@@ -247,12 +252,14 @@ body.bold{font-weight:600}
     {name:'k35',len:6,signal:3,secs:45,sec:'WPA2 Personal',cs:'ld',lvl:3},
     {name:'TANY',len:8,signal:2,secs:80,sec:'WPA2 Personal',cs:'Ld',lvl:4},
     {name:'TP-Link_254E',len:9,signal:2,secs:130,sec:'WPA3 Personal',cs:'Lds',lvl:5},
+    {name:'OSVITLA STUDENT-education',len:8,signal:3,secs:60,sec:'WPA2 Personal',cs:'ld',lvl:3},
+    {name:'OSVITLA ACADEMY-shevchenco',len:10,signal:3,secs:110,sec:'WPA2 Personal',cs:'Ld',lvl:5},
     {name:'Kyiv_Net_5G',len:12,signal:1,secs:200,sec:'WPA3 Personal',cs:'Lds',lvl:6}
   ];
   var nets,connected,battery,view,autoJoin,reveal,joining;
   var page='wifi',charging=false,spent=0,t0=Date.now(),lastCharge=null;
   var airplane=false,wifiOn=true,btOn=true,gsub=null;
-  var bright=1,trueTone=true,nightShift=false,lpm=false,boldTxt=false,lockIdx=3,lastAct=Date.now(),lowWarned={20:false,10:false};
+  var notes=[],noteOpen=null,bright=1,trueTone=true,nightShift=false,lpm=false,boldTxt=false,lockIdx=3,lastAct=Date.now(),lowWarned={20:false,10:false};
   var LOCKS=[['30 Seconds',30],['1 Minute',60],['2 Minutes',120],['5 Minutes',300],['Never',0]];
   function ksOf(n){return Math.pow(CS[n.cs].length,n.len)}
   function rndPw(n){
@@ -263,7 +270,7 @@ body.bold{font-weight:600}
     return s;
   }
   function resetNet(n){n.password=rndPw(n);n.prog=0;n.cracked=false;n.dictDone=false;n.weak=(COMMON[n.name]||[]).indexOf(n.password)>=0}
-  var acct='Гравець',mem={};
+  var acct='Гравець',mail='',mem={};
   var PERSON='<svg width="30" height="30" viewBox="0 0 30 30" fill="#8e8e93"><circle cx="15" cy="11" r="5.5"/><path d="M4 27c1-6 6-9 11-9s10 3 11 9z"/></svg>';
   function ls(k,v,del){
     try{
@@ -281,7 +288,7 @@ body.bold{font-weight:600}
   /* progress saves by itself, no sign-in needed */
   function save(){
     if(!nets)return;
-    ls('wb_save2',{name:acct,connected:connected,battery:battery,disp:{b:bright,tt:trueTone,ns:nightShift,lpm:lpm,bold:boldTxt,lk:lockIdx},
+    ls('wb_save2',{notes:notes,name:acct,mail:mail,connected:connected,battery:battery,disp:{b:bright,tt:trueTone,ns:nightShift,lpm:lpm,bold:boldTxt,lk:lockIdx},
       nets:nets.map(function(n){return {name:n.name,password:n.password,prog:n.prog,cracked:n.cracked,dictDone:n.dictDone}})});
   }
   function load(){
@@ -289,6 +296,8 @@ body.bold{font-weight:600}
     var d=ls('wb_save2');
     if(!d||!d.nets)return;
     if(typeof d.name==='string'&&d.name)acct=d.name;
+    mail=typeof d.mail==='string'?d.mail:'';
+    notes=Array.isArray(d.notes)?d.notes.filter(function(x){return x&&typeof x.text==='string'}):[];
     d.nets.forEach(function(s){
       var n=net(s.name);
       if(n&&typeof s.password==='string'&&s.password.length===n.len){
@@ -310,25 +319,31 @@ body.bold{font-weight:600}
     document.body.classList.toggle('bold',boldTxt);
   }
   function meHtml(){
-    return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av">'+esc(acct.slice(0,2).toUpperCase())+'</div><div><b>'+esc(acct)+'</b><small>Ігровий профіль · зламано '+cracked()+'/'+nets.length+'</small></div></button>';
+    if(!mail)return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av" style="background:#2c2c2e">'+PERSON+'</div><div><b>Sign in</b><small>Увійди з поштою, щоб відкрити ігровий профіль</small></div></button>';
+    return '<button class="me'+(page==='account'?' on':'')+'" data-acct><div class="av">'+esc(acct.slice(0,2).toUpperCase())+'</div><div><b>'+esc(acct)+'</b><small>'+esc(mail)+' · зламано '+cracked()+'/'+nets.length+'</small></div></button>';
   }
   function openAcct(){
     var host=$('#sheetHost');
     host.innerHTML='<div class="dim" id="dim"><div class="sheet" id="acct" role="dialog" aria-label="Player Name">'+
       '<div class="sh-top"><button class="round" id="sx" aria-label="Cancel">'+ICON.x+'</button><button class="round ok ready" id="aok" aria-label="Done">'+ICON.check+'</button></div>'+
       '<div class="sh-wifi"><div class="av" style="width:84px;height:84px;font-size:32px">'+esc(acct.slice(0,2).toUpperCase())+'</div></div>'+
-      '<h3>Name</h3><div class="sub">Як тебе звати в грі? Прогрес зберігається сам, без пошти й паролів.</div>'+
-      '<input class="pw txt" id="an" type="text" value="'+esc(acct)+'" maxlength="16" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="done" aria-label="Name">'+
+      '<h3>'+(mail?'Name &amp; Email':'Sign In')+'</h3><div class="sub">Вкажи імʼя та пошту для ігрового профілю. Пароль не потрібен.</div>'+
+      '<input class="pw txt" id="an" type="text" value="'+esc(acct)+'" maxlength="16" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="Name" aria-label="Name">'+
+      '<input class="pw txt" id="am" type="email" value="'+esc(mail)+'" maxlength="60" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="Email" aria-label="Email" style="margin-top:10px">'+
+      '<div class="note">Це лише гра: пошта зберігається тільки в цьому браузері, листи не надсилаються. Краще вигадай адресу, наприклад player@example.com.</div>'+
       '<div id="amsg"></div></div></div>';
     $('#sx').onclick=closeSheet;
     $('#dim').addEventListener('mousedown',function(e){if(e.target.id==='dim')closeSheet()});
     function submit(){
       var nm=$('#an').value.trim();
       if(!/^[\wЀ-ӿ -]{1,16}$/.test(nm)){$('#amsg').innerHTML='<div class="alert">Імʼя: 1–16 символів, літери, цифри, пробіл, _ або -.</div>';return}
-      acct=nm;closeSheet();toast('Імʼя збережено: '+nm,'Settings');
+      var em=$('#am').value.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){$('#amsg').innerHTML='<div class="alert">Введи пошту у форматі name@example.com.</div>';return}
+      acct=nm;mail=em;closeSheet();renderAll();toast('Вхід виконано: '+em,'Settings');
     }
     $('#aok').onclick=submit;
-    $('#an').addEventListener('keydown',function(e){if(e.key==='Enter')submit()});
+    $('#an').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('#am').focus()}});
+    $('#am').addEventListener('keydown',function(e){if(e.key==='Enter')submit()});
     setTimeout(function(){var a=$('#an');if(a){a.focus();a.select()}},60);
   }
   function newGame(){
@@ -395,9 +410,10 @@ body.bold{font-weight:600}
       ['#0a84ff',S.disp,'Display & Brightness',''],
       ['#0a84ff',S.acc,'Accessibility',''],
       ['#111',S.app,'Appearance',''],
-      ['#8e8e93',S.pen,'Apple Pencil','']
+      ['#8e8e93',S.pen,'Apple Pencil',''],
+      ['#ffb800',S.note,'Notes',notes.length?String(notes.length):'']
     ];
-    var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general','Display & Brightness':'display'};
+    var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general','Display & Brightness':'display',Notes:'notes'};
     var h='<div class="sthead"><div class="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M12 12l5 5"/></svg>Search</div></div>'+
       meHtml()+'<div class="gap"></div>';
     items.forEach(function(it){
@@ -409,8 +425,8 @@ body.bold{font-weight:600}
       h+='<div class="sitem'+(on?' on':'')+'"'+(pg?' data-page="'+pg+'" tabindex="0"':'')+'>'+sIco(it[0],icon)+'<span>'+it[2]+'</span><span class="v">'+val+'</span></div>';
     });
     $('#side').innerHTML=h;
-    var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General'],['display','Display']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
-      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+esc(acct)+'</button><button data-air'+(airplane?' class="on"':'')+'>Літак</button>';
+    var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General'],['display','Display'],['notes','Notes']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
+      '<button data-acct'+(page==='account'?' class="on"':'')+'>'+(mail?esc(acct):'Sign in')+'</button><button data-air'+(airplane?' class="on"':'')+'>Літак</button>';
     $('#mnav').innerHTML=mn;
   }
   var CHEV='<svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="#6b6b70" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l6 6-6 6"/></svg>';
@@ -481,6 +497,7 @@ body.bold{font-weight:600}
       '<div style="font-size:34px;font-weight:700;margin-top:12px;overflow-wrap:anywhere;text-align:center">'+esc(acct)+'</div>'+
       '<div style="color:var(--dim);font-size:20px">Ігровий профіль</div></div>'+
       '<div class="card"><div class="row click" tabindex="0" data-rename><span class="name">Name</span><span class="val">'+esc(acct)+'</span>'+CHEV+'</div>'+
+        '<div class="row click" tabindex="0" data-rename><span class="name">Email</span><span class="val">'+esc(mail)+'</span>'+CHEV+'</div>'+
         grow('#8e8e93',ig('M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3M12 13v4M8 20h8'),'Achievements','x')+
       '</div>'+
       '<div class="card">'+
@@ -489,8 +506,26 @@ body.bold{font-weight:600}
         grow('#30d158',S.bat,'Battery','x',battery+'%')+
         grow('#8e8e93',ig('M12 7v5l3 2M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0'),'Session','x',mins+' min')+
       '</div>'+
-      '<div class="cap" style="margin-top:-8px">Прогрес зберігається автоматично в цьому браузері. Акаунт, пошта й паролі не потрібні.</div>'+
-      '<div class="card"><div class="row click" tabindex="0" data-reset><span style="color:var(--red)">Reset Progress</span></div></div>';
+      '<div class="cap" style="margin-top:-8px">Профіль і прогрес зберігаються лише в цьому браузері. Пошта тут для вигляду, листи не надсилаються.</div>'+
+      '<div class="card"><div class="row click" tabindex="0" data-reset><span style="color:var(--red)">Reset Progress</span></div>'+
+      '<div class="row click" tabindex="0" data-signout><span style="color:var(--red)">Sign Out</span></div></div>';
+    p.innerHTML=h;
+  }
+  function nTitle(n){var l=n.text.trim().split('\n')[0];return l||'Нова нотатка'}
+  function nBody(n){var a=n.text.trim().split('\n').slice(1).join(' ').trim();return a||'Без додаткового тексту'}
+  function nDate(t){var d=new Date(t);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' · '+d.getDate()+'.'+('0'+(d.getMonth()+1)).slice(-2)}
+  function renderNotes(p){
+    var cur2=notes.filter(function(x){return x.id===noteOpen})[0];
+    if(noteOpen!==null&&cur2){
+      p.innerHTML='<div class="top"><button class="round" data-nback aria-label="Back">'+ICON.back+'</button><h2>Note</h2></div>'+
+        '<div class="card" style="padding:14px 18px"><textarea class="ntxt" id="nt" placeholder="Пиши тут: паролі, підказки, ідеї…" aria-label="Note">'+esc(cur2.text)+'</textarea></div>'+
+        '<div class="card"><div class="row click" tabindex="0" data-ndel><span style="color:var(--red)">Delete Note</span></div></div>';
+      return;
+    }
+    var h='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Notes</h2></div>'+
+      '<div class="editrow"><button class="btn" data-nnew>＋ New Note</button></div>';
+    if(!notes.length)h+='<div class="card" style="padding:26px 18px;text-align:center;color:var(--dim)">Нотаток ще немає. Запиши підказки до паролів або свої плани.</div>';
+    else h+='<div class="card">'+notes.map(function(n){return '<div class="row click" tabindex="0" data-nopen="'+n.id+'" style="min-height:66px"><span class="name"><b>'+esc(nTitle(n))+'</b><br><span style="color:var(--dim);font-size:14px">'+nDate(n.t)+'  '+esc(nBody(n)).slice(0,60)+'</span></span>'+CHEV+'</div>'}).join('')+'</div>';
     p.innerHTML=h;
   }
   function renderDisplay(p){
@@ -522,12 +557,13 @@ body.bold{font-weight:600}
     if(page==='bluetooth'){renderBluetooth(p);return}
     if(page==='general'){renderGeneral(p);return}
     if(page==='display'){renderDisplay(p);return}
+    if(page==='notes'){renderNotes(p);return}
     if(page==='account'){renderAccount(p);return}
     if(view){renderDetail(p);return}
     var all=cracked()===nets.length;
     var everyone=[{name:'sweet_home',signal:3}].concat(nets);
     var cn=everyone.filter(function(n){return n.name===connected})[0];
-    var h='<div class="editrow"><button class="editbtn" data-gsub="x">Edit</button></div><div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+esc(acct)+'</button></div>';
+    var h='<div class="editrow"><button class="editbtn" data-gsub="x">Edit</button></div><div class="score">Зламано мереж <b>'+cracked()+' / '+nets.length+'</b> · <button class="link" data-page="battery" style="font-size:14px">Батарея <b>'+battery+'%</b>'+(charging?' (заряджається)':'')+'</button> · <button class="link" data-acct style="font-size:14px">'+(mail?esc(acct):'Sign in')+'</button></div>';
     if(all)h+='<div class="win"><h3>Усі мережі зламано</h3><p>Це лише гра: паролі випадкові, справжніх мереж тут немає. Спробуй ще раз із новими кодами.</p><button class="btn" data-again>Грати знову</button></div>';
     h+='<div class="card"><div class="hero"><div class="big">'+wifi(3,38)+'</div><h1>Wi-Fi</h1>'+
       '<p>Connect to Wi-Fi, view available networks, and manage settings for joining networks and nearby hotspots. <span class="link">Learn more…</span></p></div>'+
@@ -537,7 +573,7 @@ body.bold{font-weight:600}
     var saved=everyone.filter(function(n){return n.name!==connected&&(n.name==='sweet_home'||n.cracked)});
     var other=nets.filter(function(n){return n.name!==connected&&!n.cracked});
     if(saved.length)h+='<div class="hd">My Networks</div><div class="card">'+saved.map(netRow).join('')+'</div>';
-    h+='<div class="hd">Other Networks</div><div class="card">'+other.map(netRow).join('')+'<div class="row pad"><span class="name">Other…</span></div></div><div class="cap" style="margin-top:-8px">Гра: тапни мережу, щоб підібрати пароль. Паролі випадкові, справжніх мереж тут немає.</div>';
+    h+='<div class="hd">Other Networks</div><div class="card">'+other.map(netRow).join('')+'<div class="row pad"><span class="name">Other…</span></div></div>';
     p.innerHTML=h;
   }
   var chgT=null;
@@ -743,7 +779,13 @@ body.bold{font-weight:600}
     }
     if(t.closest('[data-back]')){view=null;renderPane();return}
     if(t.closest('[data-rename]')){openAcct();return}
-    if(t.closest('[data-acct]')){page='account';view=null;gsub=null;renderAll();return}
+    if(t.closest('[data-nnew]')){var nn={id:Date.now(),text:'',t:Date.now()};notes.unshift(nn);noteOpen=nn.id;renderAll();setTimeout(function(){var a=$('#nt');if(a)a.focus()},50);return}
+    var no=t.closest('[data-nopen]');
+    if(no){noteOpen=+no.getAttribute('data-nopen');renderAll();return}
+    if(t.closest('[data-nback]')){notes=notes.filter(function(x){return x.id!==noteOpen||x.text.trim()});noteOpen=null;renderAll();return}
+    if(t.closest('[data-ndel]')){alertBox('Delete Note?','Нотатку буде видалено.',[{t:'Cancel'},{t:'Delete',red:1,fn:function(){notes=notes.filter(function(x){return x.id!==noteOpen});noteOpen=null;renderAll()}}]);return}
+    if(t.closest('[data-signout]')){mail='';page='wifi';renderAll();toast('Ви вийшли з профілю. Прогрес збережено.','Settings');return}
+    if(t.closest('[data-acct]')){if(!mail){openAcct();return}page='account';view=null;gsub=null;renderAll();return}
     if(t.closest('[data-air]')){airplane=!airplane;toast(airplane?'Airplane Mode on':'Airplane Mode off','Airplane');renderAll();return}
     if(t.closest('[data-wifi]')){if(airplane)toast('Спершу вимкни Airplane Mode','Airplane');else wifiOn=!wifiOn;renderAll();return}
     if(t.closest('[data-bt]')){if(airplane)toast('Спершу вимкни Airplane Mode','Airplane');else btOn=!btOn;renderAll();return}
@@ -761,7 +803,7 @@ body.bold{font-weight:600}
       return;
     }
     var pgEl=t.closest('[data-page]');
-    if(pgEl){page=pgEl.getAttribute('data-page');view=null;gsub=null;renderAll();return}
+    if(pgEl){page=pgEl.getAttribute('data-page');view=null;gsub=null;noteOpen=null;notes=notes.filter(function(x){return x.text.trim()});renderAll();return}
     if(t.closest('[data-chg]')){charging=!charging;if(charging)showCharge();else $('#chgscr').classList.remove('on');toast(charging?'Charger connected':'Charger disconnected','Battery');renderAll();return}
     if(t.closest('[data-again]')){newGame();renderAll();return}
     if(t.closest('[data-auto]')){autoJoin[view]=autoJoin[view]===false;renderPane();return}
@@ -780,6 +822,7 @@ body.bold{font-weight:600}
     }
   });
   document.addEventListener('input',function(e){
+    if(e.target&&e.target.id==='nt'){var cn=notes.filter(function(x){return x.id===noteOpen})[0];if(cn){cn.text=e.target.value;cn.t=Date.now();save()}return}
     if(e.target&&e.target.id==='brt'){
       bright=Math.max(.1,e.target.value/100);e.target.style.setProperty('--p',e.target.value+'%');applyDisplay();save();
     }
@@ -804,6 +847,21 @@ body.bold{font-weight:600}
     if(Date.now()-lastAct>lim*1000)showLock();
   },1000);
   $('#lockscr').addEventListener('click',function(){this.classList.remove('on');lastAct=Date.now()});
+  function syncFs(){
+    var sa=false;try{sa=!!window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches}catch(e){}
+    document.body.classList.toggle('fsmode',!!(document.fullscreenElement||document.webkitFullscreenElement)||sa);
+  }
+  document.addEventListener('fullscreenchange',syncFs);document.addEventListener('webkitfullscreenchange',syncFs);syncFs();
+  function fsEl(){return document.fullscreenElement||document.webkitFullscreenElement}
+  $('#fs').addEventListener('click',function(e){
+    e.stopPropagation();
+    var d=document.documentElement;
+    try{
+      if(fsEl()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
+      else if(d.requestFullscreen||d.webkitRequestFullscreen){var r=(d.requestFullscreen||d.webkitRequestFullscreen).call(d);if(r&&r.catch)r.catch(function(){toast('Safari не дозволив повний екран. Спробуй: Share → Add to Home Screen.','Settings')})}
+      else toast('Цей браузер не підтримує повний екран. Спробуй: Share → Add to Home Screen.','Settings');
+    }catch(err){toast('Повний екран недоступний тут. Спробуй: Share → Add to Home Screen.','Settings')}
+  });
   load();applyDisplay();renderAll();
   window.addEventListener('pagehide',save);
   setInterval(renderStatus,30000);
