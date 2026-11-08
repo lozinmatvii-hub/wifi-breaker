@@ -849,7 +849,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
 
   /* ---------- Terminal app ---------- */
   var term={lines:[]},tJob=null,tTimer=null;
-  var T_HELP=['Commands:','  help                       show this list','  scan                       list nearby networks','  status                     battery, connection, progress','  attack <ssid> [dict|brute] start an attack (default: brute)','  stop                       stop the running attack','  connect <ssid> [password]  join a network','  vpn on|off                 toggle VPN (harder to notice you)','  clear                      clear the screen','','You can use / instead of spaces: attack/osvitla/academy/dict','Partial names work.'];
+  var T_HELP=['Commands:','  help                       show this list','  scan                       list nearby networks','  status                     battery, connection, progress','  attack <ssid> [dict|brute] start an attack (default: brute)','  stop                       stop the running attack','  vpn on|off                 toggle VPN (harder to notice you)','  clear                      clear the screen','','You can use / instead of spaces: attack/osvitla/academy/dict','Partial names work.'];
   function tLog(t,cls){
     term.lines.push({t:t,c:cls||''});if(term.lines.length>300)term.lines.shift();
     var o=$('#tout');
@@ -910,6 +910,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     }
     if(cmd==='stop'){if(tJob){tLog('attack stopped','warn');tStop()}else tLog('nothing is running');return}
     if(cmd==='attack'||cmd==='connect'){
+      if(cmd==='connect'){tLog('error: connecting is not allowed in the terminal','err');tLog('       the terminal only finds passwords. Type it in Wi-Fi settings.','mut');return}
       m=tMatch(args);
       if(!m){
         var sg=suggestNet(args);
@@ -919,11 +920,8 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       }
       var n=m.n;
       if(cmd==='connect'){
-        var pw=m.rest.join(' ');
-        if(n.open||n.cracked){tLog('joining '+n.name+'…');connect(n.name,'Connected to “'+n.name+'”.');return}
-        if(!pw){tLog('error: password required','err');return}
-        if(pw===n.password){n.cracked=true;tLog('authentication OK','ok');connect(n.name,'Connected to “'+n.name+'”.')}
-        else tLog('authentication failed','err');
+        tLog('error: connecting is not allowed in the terminal','err');
+        tLog('       the terminal only finds passwords. Type it in Wi-Fi settings.','mut');
         return;
       }
       if(airplane||!wifiOn){tLog('error: Wi-Fi is off','err');return}
@@ -963,7 +961,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var ks=brute?ksOf(n):10000,step=Math.floor(p*20);
     if(step>j.last){j.last=step;tLog('['+('  '+Math.round(p*100)).slice(-3)+'%] tried '+fnum(p*ks)+' keys  ('+fnum(ks/secs)+' H/s)')}
     if(p>=1){
-      if(brute||n.weak){n.cracked=true;tLog('[+] KEY FOUND: '+n.password,'ok');tLog("    type: connect "+n.name,'mut');tStop();renderSide()}
+      if(brute||n.weak){tLog('[+] KEY FOUND: '+n.password,'ok');tLog('    now type it in Wi-Fi settings to join '+n.name,'mut');tStop()}
       else{n.dictDone=true;tLog('[-] not in dictionary. try: attack '+n.name+' brute','warn');tStop()}
     }
   }
