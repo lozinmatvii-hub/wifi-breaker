@@ -170,10 +170,11 @@ button.me:hover{background:#15171b}
 .ntxt{width:100%;min-height:320px;background:none;border:0;color:#fff;font:inherit;font-size:18px;line-height:1.45;resize:vertical;outline:0}
 .batt.lpm{background:#ffd60a;color:#000}
 body.bold{font-weight:600}
+.sheet .chips{display:none}
 .sheet .gsep,.sheet #seg,.sheet #mnote,.sheet .bar,.sheet .hint,.sheet .term,.sheet .plog,.sheet #go{display:none}
 .termwin{background:#000;border:1px solid #2a2a2c;border-radius:22px;padding:16px;font-family:var(--mono);font-size:13.5px;color:#d1f7dc}
 .tout{height:min(58vh,520px);overflow-y:auto;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
-.tout .cmd{color:#fff}.tout .err{color:#ff6961}.tout .warn{color:var(--orange)}.tout .ok{color:var(--green)}.tout .mut{color:var(--dim)}
+.tout .dg{color:#30d158}.tout .cmd{color:#fff}.tout .err{color:#ff6961}.tout .warn{color:var(--orange)}.tout .ok{color:var(--green)}.tout .mut{color:var(--dim)}
 .tprompt{display:flex;gap:8px;margin-top:10px;border-top:1px solid #1c1c1e;padding-top:10px;color:#8fe3a9}
 .tprompt input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:inherit;font-size:16px}
 .banwin{position:fixed;inset:0;background:rgba(40,0,0,.8);z-index:90;display:flex;align-items:center;justify-content:center;animation:fade .2s}
@@ -850,17 +851,18 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   /* ---------- Terminal app ---------- */
   var term={lines:[]},tJob=null,tTimer=null;
   var T_HELP=['Commands:','  help                       show this list','  scan                       list nearby networks','  status                     battery, connection, progress','  attack <ssid> [dict|brute] start an attack (default: brute)','  stop                       stop the running attack','  vpn on|off                 toggle VPN (harder to notice you)','  clear                      clear the screen','','You can use / instead of spaces: attack/osvitla/academy/dict','Partial names work.'];
+  function tHtml(t){return esc(t).replace(/\d+/g,'<span class="dg">$&</span>')}
   function tLog(t,cls){
     term.lines.push({t:t,c:cls||''});if(term.lines.length>300)term.lines.shift();
     var o=$('#tout');
-    if(o){var d=document.createElement('div');if(cls)d.className=cls;d.textContent=t;o.appendChild(d);o.scrollTop=o.scrollHeight}
+    if(o){var d=document.createElement('div');if(cls)d.className=cls;d.innerHTML=tHtml(t);o.appendChild(d);o.scrollTop=o.scrollHeight}
   }
   function renderTerminal(p){
     if(!term.lines.length){
       ['Wi-Fi Breaker Terminal 1.0 (game)','All networks here are fictional.',"Type 'help' for commands.",''].forEach(function(t){term.lines.push({t:t,c:'mut'})});
     }
     p.innerHTML='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Terminal</h2></div>'+
-      '<div class="termwin"><div class="tout" id="tout">'+term.lines.map(function(l){return '<div'+(l.c?' class="'+l.c+'"':'')+'>'+esc(l.t)+'</div>'}).join('')+'</div>'+
+      '<div class="termwin"><div class="tout" id="tout">'+term.lines.map(function(l){return '<div'+(l.c?' class="'+l.c+'"':'')+'>'+tHtml(l.t)+'</div>'}).join('')+'</div>'+
       '<div class="tprompt"><span>'+esc(acct.replace(/\s+/g,'_').toLowerCase())+'@ipad ~ %</span><input id="tin" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Terminal input"></div></div>';
     var o=$('#tout');o.scrollTop=o.scrollHeight;
     setTimeout(function(){var i=$('#tin');if(i&&page==='terminal')i.focus()},60);
