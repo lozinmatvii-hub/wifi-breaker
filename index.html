@@ -170,6 +170,7 @@ button.me:hover{background:#15171b}
 .ntxt{width:100%;min-height:320px;background:none;border:0;color:#fff;font:inherit;font-size:18px;line-height:1.45;resize:vertical;outline:0}
 .batt.lpm{background:#ffd60a;color:#000}
 body.bold{font-weight:600}
+.sheet .gsep,.sheet #seg,.sheet #mnote,.sheet .bar,.sheet .hint,.sheet .term,.sheet .plog,.sheet #go{display:none}
 .termwin{background:#000;border:1px solid #2a2a2c;border-radius:22px;padding:16px;font-family:var(--mono);font-size:13.5px;color:#d1f7dc}
 .tout{height:min(58vh,520px);overflow-y:auto;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
 .tout .cmd{color:#fff}.tout .err{color:#ff6961}.tout .warn{color:var(--orange)}.tout .ok{color:var(--green)}.tout .mut{color:var(--dim)}
@@ -682,7 +683,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<h3>Enter Password</h3><div class="sub">Enter the password for “'+esc(n.name)+'”.</div>'+
       '<input class="pw" id="pw" type="text" placeholder="Password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="join" aria-label="Password">'+
       '<div class="chips"><span class="chip" style="color:'+lvlColor(n.lvl)+'">'+n.sec+'</span><span class="chip">Level '+n.lvl+'</span><span class="chip">'+n.len+' chars</span><span class="chip">'+CSN[n.cs]+'</span></div>'+
-      '<div class="gsep">Automatic attack</div>'+
+      '<div id="autoSec" style="display:none"><div class="gsep">Automatic attack</div>'+
       '<div class="seg" id="seg"><button data-m="dict">Dictionary</button><button data-m="brute">Brute force</button></div>'+
       '<div class="note" id="mnote" style="margin-top:8px"></div>'+
       '<div class="bar" style="margin:16px 6px 0"><i id="pfill" style="width:0;background:var(--blue)"></i></div>'+
@@ -690,7 +691,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div class="term" id="term"></div>'+
       '<div class="plog" id="plog"></div>'+
       '<button class="btn" id="go" style="margin-top:14px;width:100%">Start attack</button>'+
-      '<div id="msg"></div></div></div>';
+      '<div id="msg"></div></div></div></div>';
     $('#sx').onclick=closeSheet;$('#sok').onclick=submitPw;$('#go').onclick=toggleCrack;
     $('#pw').addEventListener('input',updateOk);
     $('#pw').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitPw()}});
