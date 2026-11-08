@@ -505,14 +505,14 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(gsub==='about'){
       var mins=Math.max(1,Math.round((Date.now()-t0)/60000));
       h+='<div class="card"><div class="row"><span class="name">Name</span><span class="val">iPad (9)</span></div>'+
-        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.30</span></div>'+
+        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.31</span></div>'+
         '<div class="row"><span class="name">Model Name</span><span class="val">Game Pad</span></div></div>'+
         '<div class="card"><div class="row"><span class="name">Networks</span><span class="val">'+nets.length+'</span></div>'+
         '<div class="row"><span class="name">Cracked</span><span class="val">'+cracked()+'</span></div>'+
         '<div class="row"><span class="name">Battery</span><span class="val">'+battery+'%</span></div>'+
         '<div class="row"><span class="name">Session</span><span class="val">'+mins+' min</span></div></div>';
     }else if(gsub==='update'){
-      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.30</div>'+
+      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.31</div>'+
         '<div style="color:var(--dim);margin-top:8px;font-size:16px">Your software is up to date.</div></div>'+
         '<div class="card"><div class="row"><span class="name">Automatic Updates</span><span class="val">On</span></div></div>';
     }else{
@@ -868,7 +868,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   }
   function renderTerminal(p){
     if(!term.lines.length){
-      ['Wi-Fi Breaker Terminal 1.0 (game)','All networks here are fictional.',"Type 'help' for commands.",''].forEach(function(t){term.lines.push({t:t,c:'mut'})});
+      ['Wi-Fi Breaker Terminal 1.31 (game)','All networks here are fictional.',"Type 'help' for commands.",''].forEach(function(t){term.lines.push({t:t,c:'mut'})});
     }
     p.innerHTML='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Terminal</h2></div>'+
       '<div class="termwin"><div class="tout" id="tout">'+term.lines.map(function(l){return '<div'+(l.c?' class="'+l.c+'"':'')+'>'+tHtml(l.t)+'</div>'}).join('')+'</div>'+
@@ -902,7 +902,16 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     return null;
   }
   var BOT=[
-    [/^(hi|hello|hey|привіт)\b/,"Hi! I'm the helper bot. Ask me about attacks, networks, battery, VPN or bans."],
+    [/^(hi|hello|hey|yo|привіт|добрий)\b/,function(){var h=new Date().getHours();return (h<5?'Good night':h<12?'Good morning':h<18?'Good afternoon':'Good evening')+"! I'm the helper bot. Ask me about attacks, networks, battery, VPN or bans."}],
+    [/time|clock|година|час\b/,function(){return 'It is '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'.'}],
+    [/date|today|day|дата|сьогодні/,function(){return 'Today is '+new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'.'}],
+    [/who are you|your name|what are you|хто ти/,"I'm the helper bot inside the Wi-Fi Breaker terminal. I run offline and only know about this game."],
+    [/how are you|how r u|what'?s up|як справи/,"All systems normal. Battery is "+"fine, no admin in sight. What can I help with?"],
+    [/joke|funny|анекдот/,"Why did the router go to therapy? It had too many connection issues."],
+    [/bye|goodbye|see you|exit|бувай/,"Bye! Stay under the admin's radar."],
+    [/help|command|what can you/,"I can answer questions about attacks, WPA3, dictionary vs brute force, battery, VPN, bans, notes and colors. Also try: hi, what time is it?, tell me a joke, who are you. Type help for all commands."],
+    [/tip|hint|advice|which network|easiest|best/,function(){var e=nets.filter(function(n){return !n.cracked&&!n.open}).sort(function(a,b){return a.secs-b.secs})[0];return e?'Easiest uncracked network right now: '+e.name+' (about '+e.secs+' s). Try a dictionary attack first if it is weak.':'You have cracked everything. Nice!'}],
+    [/status|progress|how many/,function(){return 'You have cracked '+cracked()+' of '+nets.length+' networks. Battery: '+battery+'%.'}],
     [/wpa3|rate|lock|wait/,'WPA3 networks rate-limit you: at 33% and 66% progress the attack waits 5 seconds.'],
     [/dict/,'A dictionary attack tries 10,000 popular passwords. It is fast, but only works on weak networks and only if the password is a common one.'],
     [/brute|keyspace|combin/,'Brute force tries every combination. It always works, but longer passwords and bigger charsets take much longer.'],
@@ -919,11 +928,12 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   function tBot(q){
     q=q.trim().toLowerCase();
     if(!q){tLog('bot> Ask me something, for example: ask how do I start?','bot');return}
-    for(var i=0;i<BOT.length;i++)if(BOT[i][0].test(q)){tLog('bot> '+BOT[i][1],'bot');return}
-    tLog("bot> I don't know that one. Try: ask how do I start? or help",'bot');
+    for(var i=0;i<BOT.length;i++)if(BOT[i][0].test(q)){var a=BOT[i][1];tLog('bot> '+(typeof a==='function'?a():a),'bot');return}
+    tLog("bot> I don't know that one. Try: hi, what time is it?, how do I start?, tip",'bot');
   }
   var TCOL={green:'#7cfc9a',amber:'#ffb000',white:'#f2f2f7',blue:'#7fb2ff',red:'#ff7b72',default:''};
   function tColor(v){var w=$('.termwin');if(w){if(v)w.style.setProperty('--tc',v);else w.style.removeProperty('--tc')}}
+  function botKnows(q){q=q.trim().toLowerCase();if(!/^(hi|hello|hey|yo|bye|thanks|thx|привіт|дякую|бувай)\b/.test(q)&&q.split(/\s+/).length<2)return false;for(var i=0;i<BOT.length;i++)if(BOT[i][0].test(q))return true;return false}
   function tRun(line){
     line=line.trim();tLog('$ '+line,'cmd');
     if(!line)return;
@@ -946,7 +956,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(cmd==='date'){tLog(new Date().toString());return}
     if(cmd==='echo'){tLog(line.slice(4).trim());return}
     if(cmd==='uptime'){tLog('up '+Math.max(1,Math.round((Date.now()-t0)/60000))+' min, battery '+battery+'%');return}
-    if(cmd==='about'){tLog('Wi-Fi Breaker 1.30 (a game)');tLog('networks: '+nets.length+', cracked: '+cracked());tLog('all networks here are fictional','mut');return}
+    if(cmd==='about'){tLog('Wi-Fi Breaker 1.31 (a game)');tLog('networks: '+nets.length+', cracked: '+cracked());tLog('all networks here are fictional','mut');return}
     if(cmd==='color'||cmd==='colour'){
       var cv=(args[0]||'').toLowerCase();
       if(!(cv in TCOL)){tLog('usage: color green | amber | white | blue | red | default');return}
@@ -1046,6 +1056,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       tTimer=setInterval(tStep,100);
       return;
     }
+    if(botKnows(line)){tBot(line);return}
     var cs=closest(cmd,['help','scan','status','attack','stop','pause','resume','clear','whoami','vpn','info','ping','trace','notes','note','cat','history','date','echo','color','ask','about','uptime']);
     if(cs){term.sug=cs+(args.length?' '+args.join(' '):'');tLog('command not found: '+cmd+'. Did you mean “'+cs+'”? Type y to run: '+term.sug,'warn')}
     else tLog('command not found: '+cmd+" (try 'help')",'err');
