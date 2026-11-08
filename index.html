@@ -170,11 +170,19 @@ button.me:hover{background:#15171b}
 .ntxt{width:100%;min-height:320px;background:none;border:0;color:#fff;font:inherit;font-size:18px;line-height:1.45;resize:vertical;outline:0}
 .batt.lpm{background:#ffd60a;color:#000}
 body.bold{font-weight:600}
+.jsheet{min-height:min(560px,100%);border-radius:40px;padding:16px 32px 32px}
+.jsheet .sh-top{margin:0 -22px}
+.jsheet .sh-wifi{margin:12px 0 44px}
+.jsheet h3{font-size:21px}
+.jsheet .sub{font-size:17.5px;margin:2px 0 40px;white-space:nowrap}
+.sitem.dis{opacity:.5}
+.jsheet #pw{padding:12px 20px;font-size:17px;border-radius:24px;min-height:0}
+.jsheet .note{font-size:13.5px;margin:14px 20px 0;line-height:1.35}
 .sheet .chips{display:none}
 .sheet .gsep,.sheet #seg,.sheet #mnote,.sheet .bar,.sheet .hint,.sheet .term,.sheet .plog,.sheet #go{display:none}
-.termwin{background:#000;border:1px solid #2a2a2c;border-radius:22px;padding:16px;font-family:var(--mono);font-size:13.5px;color:#d1f7dc}
+.termwin{background:#000;border:1px solid #2a2a2c;border-radius:22px;padding:16px;font-family:Menlo,"SF Mono",ui-monospace,Consolas,monospace;font-size:14px;letter-spacing:0;color:var(--tc,#d1f7dc)}
 .tout{height:min(58vh,520px);overflow-y:auto;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
-.tout .dg{color:#30d158}.tout .cmd{color:#fff}.tout .err{color:#ff6961}.tout .warn{color:var(--orange)}.tout .ok{color:var(--green)}.tout .mut{color:var(--dim)}
+.tout .dg{color:#30d158}.tout .bot{color:#7fd7ff}.tout .cmd{color:#fff}.tout .err{color:#ff6961}.tout .warn{color:var(--orange)}.tout .ok{color:var(--green)}.tout .mut{color:var(--dim)}
 .tprompt{display:flex;gap:8px;margin-top:10px;border-top:1px solid #1c1c1e;padding-top:10px;color:#8fe3a9}
 .tprompt input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:inherit;font-size:16px}
 .banwin{position:fixed;inset:0;background:rgba(40,0,0,.8);z-index:90;display:flex;align-items:center;justify-content:center;animation:fade .2s}
@@ -437,7 +445,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       ['#3a3a3c',S.term,'Terminal','']
     ];
     var PG={'Wi-Fi':'wifi','Bluetooth':'bluetooth','Battery':'battery','General':'general','Display & Brightness':'display',Notes:'notes',Terminal:'terminal'};
-    var h='<div class="sthead"><div class="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M12 12l5 5"/></svg>Search</div></div>'+
+    var h='<div class="sthead"><div class="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M12 12l5 5"/></svg>Search<svg style="margin-left:auto" width="16" height="20" viewBox="0 0 16 20" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="1" width="6" height="11" rx="3"/><path d="M2 9a6 6 0 0 0 12 0M8 15v4"/></svg></div></div>'+
       meHtml()+'<div class="gap"></div>';
     items.forEach(function(it){
       if(!it){h+='<div class="gap"></div>';return}
@@ -446,7 +454,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       if(val==='sw')val='<button class="sw'+(airplane?' on':'')+'" data-air aria-label="Airplane Mode" style="transform:scale(.8);transform-origin:right"></button>';
       if(val==='swv')val='<button class="sw'+(vpn?' on':'')+'" data-vpn aria-label="VPN" style="transform:scale(.8);transform-origin:right"></button>';
       var pg=PG[it[2]]||'';var on=pg&&pg===page;
-      h+='<div class="sitem'+(on?' on':'')+'"'+(pg?' data-page="'+pg+'" tabindex="0"':'')+'>'+sIco(it[0],icon)+'<span>'+it[2]+'</span><span class="v">'+val+'</span></div>';
+      h+='<div class="sitem'+(on?' on':'')+(it[2]==='Personal Hotspot'?' dis':'')+'"'+(pg?' data-page="'+pg+'" tabindex="0"':'')+'>'+sIco(it[0],icon)+'<span>'+it[2]+'</span><span class="v">'+val+'</span></div>';
     });
     $('#side').innerHTML=h;
     var mn=[['wifi','Wi-Fi'],['bluetooth','Bluetooth'],['battery','Battery'],['general','General'],['display','Display'],['notes','Notes'],['terminal','Terminal']].map(function(x){return '<button data-page="'+x[0]+'"'+(page===x[0]?' class="on"':'')+'>'+x[1]+'</button>'}).join('')+
@@ -497,14 +505,14 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(gsub==='about'){
       var mins=Math.max(1,Math.round((Date.now()-t0)/60000));
       h+='<div class="card"><div class="row"><span class="name">Name</span><span class="val">iPad (9)</span></div>'+
-        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.0</span></div>'+
+        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.30</span></div>'+
         '<div class="row"><span class="name">Model Name</span><span class="val">Game Pad</span></div></div>'+
         '<div class="card"><div class="row"><span class="name">Networks</span><span class="val">'+nets.length+'</span></div>'+
         '<div class="row"><span class="name">Cracked</span><span class="val">'+cracked()+'</span></div>'+
         '<div class="row"><span class="name">Battery</span><span class="val">'+battery+'%</span></div>'+
         '<div class="row"><span class="name">Session</span><span class="val">'+mins+' min</span></div></div>';
     }else if(gsub==='update'){
-      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.0</div>'+
+      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.30</div>'+
         '<div style="color:var(--dim);margin-top:8px;font-size:16px">Your software is up to date.</div></div>'+
         '<div class="card"><div class="row"><span class="name">Automatic Updates</span><span class="val">On</span></div></div>';
     }else{
@@ -678,11 +686,12 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     var n=net(name);
     cur=n;cracking=false;drainAcc=0;lastB=-1;mode='brute';dp=0;lockLeft=0;wasC=false;
     var host=$('#sheetHost');
-    host.innerHTML='<div class="dim" id="dim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Enter password for '+esc(n.name)+'">'+
+    host.innerHTML='<div class="dim" id="dim"><div class="sheet jsheet" role="dialog" aria-modal="true" aria-label="Enter password for '+esc(n.name)+'">'+
       '<div class="sh-top"><button class="round" id="sx" aria-label="Cancel">'+ICON.x+'</button><button class="round ok" id="sok" aria-label="Join">'+ICON.check+'</button></div>'+
       '<div class="sh-wifi">'+bigWifi()+'</div>'+
-      '<h3>Enter Password</h3><div class="sub">Enter the password for “'+esc(n.name)+'”.</div>'+
+      '<h3>Join “'+esc(n.name)+'”</h3><div class="sub">Enter the password to join this Wi-Fi network.</div>'+
       '<input class="pw" id="pw" type="text" placeholder="Password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="join" aria-label="Password">'+
+      '<div class="note">You can also access this Wi-Fi network by sharing the password from a nearby iPhone, iPad or Mac that has connected to this network and has you in their contacts.</div>'+
       '<div class="chips"><span class="chip" style="color:'+lvlColor(n.lvl)+'">'+n.sec+'</span><span class="chip">Level '+n.lvl+'</span><span class="chip">'+n.len+' chars</span><span class="chip">'+CSN[n.cs]+'</span></div>'+
       '<div id="autoSec" style="display:none"><div class="gsep">Automatic attack</div>'+
       '<div class="seg" id="seg"><button data-m="dict">Dictionary</button><button data-m="brute">Brute force</button></div>'+
@@ -850,7 +859,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
 
   /* ---------- Terminal app ---------- */
   var term={lines:[]},tJob=null,tTimer=null;
-  var T_HELP=['Commands:','  help                       show this list','  scan                       list nearby networks','  status                     battery, connection, progress','  attack <ssid> [dict|brute] start an attack (default: brute)','  stop                       stop the running attack','  vpn on|off                 toggle VPN (harder to notice you)','  clear                      clear the screen','','You can use / instead of spaces: attack/osvitla/academy/dict','Partial names work.'];
+  var T_HELP=['Commands:','  scan                       list nearby networks','  info <ssid>                network details','  ping <ssid> / trace <ssid> test a network','  attack <ssid> [dict|brute] start an attack (default: brute)','  pause / resume / stop      control the running attack','  status                     battery, connection, progress','  vpn on|off                 toggle VPN (harder to notice you)','  notes / note <text> / cat <n>  your notes','  ask <question>             ask the helper bot (or start a line with ?)','  color <name>               green amber white blue red default','  history date echo uptime about whoami clear','','You can use / instead of spaces: attack/osvitla/academy/dict'];
   function tHtml(t){return esc(t).replace(/\d+/g,'<span class="dg">$&</span>')}
   function tLog(t,cls){
     term.lines.push({t:t,c:cls||''});if(term.lines.length>300)term.lines.shift();
@@ -865,6 +874,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       '<div class="termwin"><div class="tout" id="tout">'+term.lines.map(function(l){return '<div'+(l.c?' class="'+l.c+'"':'')+'>'+tHtml(l.t)+'</div>'}).join('')+'</div>'+
       '<div class="tprompt"><span>'+esc(acct.replace(/\s+/g,'_').toLowerCase())+'@ipad ~ %</span><input id="tin" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Terminal input"></div></div>';
     var o=$('#tout');o.scrollTop=o.scrollHeight;
+    tColor(ls('wb_tc')||'');
     setTimeout(function(){var i=$('#tin');if(i&&page==='terminal')i.focus()},60);
   }
   function tMatch(tk){
@@ -883,9 +893,43 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   }
   function pad(s,n){s=String(s);while(s.length<n)s+=' ';return s}
   function tStop(){clearInterval(tTimer);tTimer=null;tJob=null}
+  function tFind(cmd,args){
+    var m=tMatch(args);
+    if(m)return m.n;
+    var sg=suggestNet(args);
+    if(sg){term.sug=cmd+' '+sg.n.name;tLog('error: network not found. Did you mean “'+sg.n.name+'”? Type y to run: '+term.sug,'warn')}
+    else tLog('error: network not found. try: scan','err');
+    return null;
+  }
+  var BOT=[
+    [/^(hi|hello|hey|привіт)\b/,"Hi! I'm the helper bot. Ask me about attacks, networks, battery, VPN or bans."],
+    [/wpa3|rate|lock|wait/,'WPA3 networks rate-limit you: at 33% and 66% progress the attack waits 5 seconds.'],
+    [/dict/,'A dictionary attack tries 10,000 popular passwords. It is fast, but only works on weak networks and only if the password is a common one.'],
+    [/brute|keyspace|combin/,'Brute force tries every combination. It always works, but longer passwords and bigger charsets take much longer.'],
+    [/battery|charge|power|drain/,'Attacks drain 1% battery every 3 seconds (every 6 s in Low Power Mode, every 2 s with VPN). At 0% the attack stops. Plug in the charger on the Battery page.'],
+    [/vpn|hide|notice|ban|admin|risk|caught/,'While attacking, the admin may notice you. VPN makes that 4 times less likely but drains the battery 50% faster. If you are noticed you must delete your account in 25 seconds, or you lose all cracked networks.'],
+    [/pause|resume/,'Type pause to pause an attack and resume to continue it from where it stopped.'],
+    [/note/,'Type note <text> to save a note, notes to list them and cat <n> to read one. Notes also live in the Notes app.'],
+    [/open|lumen space|free/,'Open networks need no password: just tap them in Wi-Fi settings.'],
+    [/colou?r|theme/,'Use: color green | amber | white | blue | red | default'],
+    [/join|connect|type|enter/,'The terminal only finds passwords. To join a network, open Wi-Fi settings, tap the network and type the password.'],
+    [/password|crack|hack|attack|start|begin|how|what do/,'Type scan to see networks, then attack <name>. When you see KEY FOUND, type that password in Wi-Fi settings.'],
+    [/thank|thx|дякую/,'You are welcome!']
+  ];
+  function tBot(q){
+    q=q.trim().toLowerCase();
+    if(!q){tLog('bot> Ask me something, for example: ask how do I start?','bot');return}
+    for(var i=0;i<BOT.length;i++)if(BOT[i][0].test(q)){tLog('bot> '+BOT[i][1],'bot');return}
+    tLog("bot> I don't know that one. Try: ask how do I start? or help",'bot');
+  }
+  var TCOL={green:'#7cfc9a',amber:'#ffb000',white:'#f2f2f7',blue:'#7fb2ff',red:'#ff7b72',default:''};
+  function tColor(v){var w=$('.termwin');if(w){if(v)w.style.setProperty('--tc',v);else w.style.removeProperty('--tc')}}
   function tRun(line){
     line=line.trim();tLog('$ '+line,'cmd');
     if(!line)return;
+    if(!term.hist)term.hist=[];
+    if(line!=='y'){term.hist.push(line);if(term.hist.length>50)term.hist.shift()}
+    if(line.charAt(0)==='?'){tBot(line.slice(1));return}
     var tk=line.split(/[\s\/]+/).filter(Boolean),cmd=tk[0].toLowerCase(),args=tk.slice(1),m;
     if(cmd==='help'){T_HELP.forEach(function(t){tLog(t)});return}
     if(cmd==='clear'){term.lines=[];var o=$('#tout');if(o)o.innerHTML='';return}
@@ -895,6 +939,66 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       var on=(args[0]||'').toLowerCase();
       if(on!=='on'&&on!=='off'){tLog('vpn: '+(vpn?'on':'off')+'  (use: vpn on|off)');return}
       vpn=on==='on';renderSide();renderStatus();save();tLog('VPN '+on,'ok');
+      return;
+    }
+    if(cmd==='ask'){tBot(args.join(' '));return}
+    if(cmd==='history'){(term.hist||[]).forEach(function(h,i){tLog(pad(i+1,4)+h)});return}
+    if(cmd==='date'){tLog(new Date().toString());return}
+    if(cmd==='echo'){tLog(line.slice(4).trim());return}
+    if(cmd==='uptime'){tLog('up '+Math.max(1,Math.round((Date.now()-t0)/60000))+' min, battery '+battery+'%');return}
+    if(cmd==='about'){tLog('Wi-Fi Breaker 1.30 (a game)');tLog('networks: '+nets.length+', cracked: '+cracked());tLog('all networks here are fictional','mut');return}
+    if(cmd==='color'||cmd==='colour'){
+      var cv=(args[0]||'').toLowerCase();
+      if(!(cv in TCOL)){tLog('usage: color green | amber | white | blue | red | default');return}
+      tColor(TCOL[cv]);ls('wb_tc',TCOL[cv]);tLog('color: '+cv,'ok');return;
+    }
+    if(cmd==='notes'){
+      if(!notes.length){tLog('no notes yet. try: note <text>','mut');return}
+      notes.forEach(function(n,i){tLog(pad(i+1,4)+(n.text.trim().split('\n')[0]||'(empty)'))});
+      return;
+    }
+    if(cmd==='note'){
+      var nt=line.slice(4).trim();
+      if(!nt){tLog('usage: note <text>');return}
+      notes.unshift({id:Date.now(),text:nt,t:Date.now()});renderSide();save();tLog('saved as note 1','ok');return;
+    }
+    if(cmd==='cat'){
+      var ni=parseInt(args[0],10);
+      if(!notes[ni-1]){tLog('usage: cat <n>  (see: notes)','err');return}
+      notes[ni-1].text.split('\n').forEach(function(l){tLog(l)});return;
+    }
+    if(cmd==='pause'){
+      if(!tJob){tLog('nothing is running');return}
+      clearInterval(tTimer);tTimer=null;term.paused=tJob;tJob=null;
+      tLog('attack paused on '+term.paused.n.name+'. type resume to continue','warn');return;
+    }
+    if(cmd==='resume'){
+      if(!term.paused){tLog('nothing to resume');return}
+      if(battery<=0){tLog('error: battery is empty. charge the device','err');return}
+      tJob=term.paused;term.paused=null;detAcc=0;tLog('[*] resuming '+tJob.n.name+'…');tTimer=setInterval(tStep,100);return;
+    }
+    if(cmd==='info'||cmd==='ping'||cmd==='trace'){
+      var tn=tFind(cmd,args);if(!tn)return;
+      if(cmd==='info'){
+        tLog('ssid:       '+tn.name);tLog('security:   '+tn.sec);
+        tLog('level:      '+tn.lvl+(tn.open?'':' / 7'));
+        tLog('password:   '+(tn.open?'none':tn.len+' chars, '+CSN[tn.cs]));
+        tLog('signal:     '+['','weak','medium','strong'][tn.signal]);
+        tLog('state:      '+(tn.cracked?(connected===tn.name?'connected':'cracked'):tn.open?'open':'locked'));
+        return;
+      }
+      if(airplane||!wifiOn){tLog('error: Wi-Fi is off','err');return}
+      if(cmd==='ping'){
+        for(var pi=0;pi<4;pi++){
+          var lost=Math.random()<(tn.signal===1?0.25:tn.signal===2?0.08:0);
+          tLog(lost?'Request timeout for icmp_seq '+pi:'64 bytes from '+tn.name+': icmp_seq='+pi+' time='+(8+Math.floor(Math.random()*40*(4-tn.signal)))+' ms');
+        }
+        return;
+      }
+      tLog('traceroute to '+tn.name+', 3 hops max');
+      tLog(' 1  192.168.0.1   '+(1+Math.floor(Math.random()*4))+' ms');
+      tLog(' 2  10.20.0.1     '+(6+Math.floor(Math.random()*8))+' ms');
+      tLog(' 3  gateway       '+(14+Math.floor(Math.random()*20)*(4-tn.signal))+' ms');
       return;
     }
     if(cmd==='scan'){
@@ -907,10 +1011,10 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       tLog('battery:    '+battery+'%'+(charging?' (charging)':'')+(lpm?' [low power]':''));
       tLog('wi-fi:      '+((airplane||!wifiOn)?'off':connected));
       tLog('cracked:    '+cracked()+' / '+nets.length);
-      tLog('attack:     '+(tJob?tJob.n.name+' ('+tJob.m+')':'none'));
+      tLog('attack:     '+(tJob?tJob.n.name+' ('+tJob.m+')':term.paused?'paused on '+term.paused.n.name:'none'));
       return;
     }
-    if(cmd==='stop'){if(tJob){tLog('attack stopped','warn');tStop()}else tLog('nothing is running');return}
+    if(cmd==='stop'){if(tJob||term.paused){tLog('attack stopped','warn');tStop();term.paused=null}else tLog('nothing is running');return}
     if(cmd==='attack'||cmd==='connect'){
       if(cmd==='connect'){tLog('error: connecting is not allowed in the terminal','err');tLog('       the terminal only finds passwords. Type it in Wi-Fi settings.','mut');return}
       m=tMatch(args);
@@ -934,7 +1038,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       var mode2=(m.rest[0]||'brute').toLowerCase();
       if(mode2!=='dict'&&mode2!=='brute'){tLog('error: mode must be dict or brute','err');return}
       if(mode2==='dict'&&n.dictDone){tLog('error: dictionary already tried on '+n.name,'err');return}
-      detAcc=0;
+      detAcc=0;term.paused=null;
       tJob={n:n,m:mode2,dp:0,lock:0,acc:0,last:0};
       tLog('[*] target: '+n.name+'  ('+n.sec+', level '+n.lvl+')');
       tLog('[*] mode: '+(mode2==='dict'?'dictionary':'brute force'));
@@ -942,7 +1046,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
       tTimer=setInterval(tStep,100);
       return;
     }
-    var cs=closest(cmd,['help','scan','status','attack','stop','connect','clear','whoami','vpn']);
+    var cs=closest(cmd,['help','scan','status','attack','stop','pause','resume','clear','whoami','vpn','info','ping','trace','notes','note','cat','history','date','echo','color','ask','about','uptime']);
     if(cs){term.sug=cs+(args.length?' '+args.join(' '):'');tLog('command not found: '+cmd+'. Did you mean “'+cs+'”? Type y to run: '+term.sug,'warn')}
     else tLog('command not found: '+cmd+" (try 'help')",'err');
   }
