@@ -518,14 +518,14 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(gsub==='about'){
       var mins=Math.max(1,Math.round((Date.now()-t0)/60000));
       h+='<div class="card"><div class="row"><span class="name">Name</span><span class="val">iPad (9)</span></div>'+
-        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.35</span></div>'+
+        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.38</span></div>'+
         '<div class="row"><span class="name">Model Name</span><span class="val">Game Pad</span></div></div>'+
         '<div class="card"><div class="row"><span class="name">Networks</span><span class="val">'+nets.length+'</span></div>'+
         '<div class="row"><span class="name">Cracked</span><span class="val">'+cracked()+'</span></div>'+
         '<div class="row"><span class="name">Battery</span><span class="val">'+battery+'%</span></div>'+
         '<div class="row"><span class="name">Session</span><span class="val">'+mins+' min</span></div></div>';
     }else if(gsub==='update'){
-      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.35</div>'+
+      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.38</div>'+
         '<div style="color:var(--dim);margin-top:8px;font-size:16px">Your software is up to date.</div></div>'+
         '<div class="card"><div class="row"><span class="name">Automatic Updates</span><span class="val">On</span></div></div>';
     }else{
@@ -896,7 +896,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   }
   function renderTerminal(p){
     if(!term.lines.length){
-      ['Wi-Fi Breaker Terminal 1.35 (game)','All networks here are fictional.',"Type 'help' for commands.",''].forEach(function(t){term.lines.push({t:t,c:'mut'})});
+      ['Wi-Fi Breaker Terminal 1.38 (game)','All networks here are fictional.',"Type 'help' for commands.",''].forEach(function(t){term.lines.push({t:t,c:'mut'})});
     }
     p.innerHTML='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Terminal</h2></div>'+
       '<div class="termwin"><div class="tout" id="tout">'+term.lines.map(function(l){return '<div'+(l.c?' class="'+l.c+'"':'')+'>'+tHtml(l.t)+'</div>'}).join('')+'</div>'+
@@ -984,7 +984,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(cmd==='date'){tLog(new Date().toString());return}
     if(cmd==='echo'){tLog(line.slice(4).trim());return}
     if(cmd==='uptime'){tLog('up '+Math.max(1,Math.round((Date.now()-t0)/60000))+' min, battery '+battery+'%');return}
-    if(cmd==='about'){tLog('Wi-Fi Breaker 1.35 (a game)');tLog('networks: '+nets.length+', cracked: '+cracked());tLog('all networks here are fictional','mut');return}
+    if(cmd==='about'){tLog('Wi-Fi Breaker 1.38 (a game)');tLog('networks: '+nets.length+', cracked: '+cracked());tLog('all networks here are fictional','mut');return}
     if(cmd==='color'||cmd==='colour'){
       var cv=(args[0]||'').toLowerCase();
       if(!(cv in TCOL)){tLog('usage: color green | amber | white | blue | red | default');return}
