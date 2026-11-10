@@ -183,6 +183,7 @@ body.bold{font-weight:600}
 .termwin{background:#000;border:1px solid #2a2a2c;border-radius:22px;padding:16px;font-family:Menlo,"SF Mono",ui-monospace,Consolas,monospace;font-size:14px;letter-spacing:0;color:var(--tc,#d1f7dc)}
 .tout{height:min(58vh,520px);overflow-y:auto;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
 .tout .dg{color:#30d158}.tout .bot{color:#7fd7ff}.tout .cmd{color:#fff}.tout .err{color:#ff6961}.tout .warn{color:var(--orange)}.tout .ok{color:var(--green)}.tout .mut{color:var(--dim)}
+.tlive{margin-top:8px;color:#7fd7ff;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:0}.tlive:empty{display:none}
 .tprompt{display:flex;gap:8px;margin-top:10px;border-top:1px solid #1c1c1e;padding-top:10px;color:#8fe3a9}
 .tprompt input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:inherit;font-size:16px}
 .banwin{position:fixed;inset:0;background:rgba(40,0,0,.8);z-index:90;display:flex;align-items:center;justify-content:center;animation:fade .2s}
@@ -518,14 +519,14 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(gsub==='about'){
       var mins=Math.max(1,Math.round((Date.now()-t0)/60000));
       h+='<div class="card"><div class="row"><span class="name">Name</span><span class="val">iPad (9)</span></div>'+
-        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.38</span></div>'+
+        '<div class="row"><span class="name">Software Version</span><span class="val">Wi-Fi Breaker 1.39</span></div>'+
         '<div class="row"><span class="name">Model Name</span><span class="val">Game Pad</span></div></div>'+
         '<div class="card"><div class="row"><span class="name">Networks</span><span class="val">'+nets.length+'</span></div>'+
         '<div class="row"><span class="name">Cracked</span><span class="val">'+cracked()+'</span></div>'+
         '<div class="row"><span class="name">Battery</span><span class="val">'+battery+'%</span></div>'+
         '<div class="row"><span class="name">Session</span><span class="val">'+mins+' min</span></div></div>';
     }else if(gsub==='update'){
-      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.38</div>'+
+      h+='<div class="card" style="padding:26px 18px;text-align:center"><div style="font-size:19px;font-weight:600">Wi-Fi Breaker 1.39</div>'+
         '<div style="color:var(--dim);margin-top:8px;font-size:16px">Your software is up to date.</div></div>'+
         '<div class="card"><div class="row"><span class="name">Automatic Updates</span><span class="val">On</span></div></div>';
     }else{
@@ -896,11 +897,11 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
   }
   function renderTerminal(p){
     if(!term.lines.length){
-      ['Wi-Fi Breaker Terminal 1.38 (game)','All networks here are fictional.',"Type 'help' for commands.",''].forEach(function(t){term.lines.push({t:t,c:'mut'})});
+      ['Wi-Fi Breaker Terminal 1.39 (game)','All networks here are fictional.',"Type 'help' for commands.",''].forEach(function(t){term.lines.push({t:t,c:'mut'})});
     }
     p.innerHTML='<div class="top"><button class="round mback" data-page="wifi" aria-label="Back">'+ICON.back+'</button><h2>Terminal</h2></div>'+
       '<div class="termwin"><div class="tout" id="tout">'+term.lines.map(function(l){return '<div'+(l.c?' class="'+l.c+'"':'')+'>'+tHtml(l.t)+'</div>'}).join('')+'</div>'+
-      '<div class="tprompt"><span>'+esc(acct.replace(/\s+/g,'_').toLowerCase())+'@ipad ~ %</span><input id="tin" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Terminal input"></div></div>';
+      '<div class="tlive" id="tlive"></div><div class="tprompt"><span>'+esc(acct.replace(/\s+/g,'_').toLowerCase())+'@ipad ~ %</span><input id="tin" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Terminal input"></div></div>';
     var o=$('#tout');o.scrollTop=o.scrollHeight;
     tColor(ls('wb_tc')||'');
     setTimeout(function(){var i=$('#tin');if(i&&page==='terminal')i.focus()},60);
@@ -920,7 +921,21 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     return null;
   }
   function pad(s,n){s=String(s);while(s.length<n)s+=' ';return s}
-  function tStop(){clearInterval(tTimer);tTimer=null;tJob=null}
+  function tLive(t){var e=$('#tlive');if(e)e.textContent=t||''}
+  function tStop(){clearInterval(tTimer);tTimer=null;tJob=null;tLive('')}
+  /* the terminal does not know the password: it walks through candidates and
+     the real one comes up at a point that depends on the password itself */
+  function hitFrac(n){
+    var h=2166136261,str=n.name+'|'+n.password;
+    for(var i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0}
+    return 0.12+0.88*((h%1000)/999);
+  }
+  function candidate(n,brute){
+    var out='',i,cs=CS[n.cs],pool=WORDS.concat(['qwerty','abc123','111111','admin','welcome','12345678']);
+    if(brute){for(i=0;i<n.len;i++)out+=cs.charAt(Math.floor(Math.random()*cs.length))}
+    else{out=pool[Math.floor(Math.random()*pool.length)];if(Math.random()<0.4)out+=Math.floor(Math.random()*100)}
+    return out===n.password?candidate(n,brute):out;
+  }
   function tFind(cmd,args){
     var m=tMatch(args);
     if(m)return m.n;
@@ -984,7 +999,7 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(cmd==='date'){tLog(new Date().toString());return}
     if(cmd==='echo'){tLog(line.slice(4).trim());return}
     if(cmd==='uptime'){tLog('up '+Math.max(1,Math.round((Date.now()-t0)/60000))+' min, battery '+battery+'%');return}
-    if(cmd==='about'){tLog('Wi-Fi Breaker 1.38 (a game)');tLog('networks: '+nets.length+', cracked: '+cracked());tLog('all networks here are fictional','mut');return}
+    if(cmd==='about'){tLog('Wi-Fi Breaker 1.39 (a game)');tLog('networks: '+nets.length+', cracked: '+cracked());tLog('all networks here are fictional','mut');return}
     if(cmd==='color'||cmd==='colour'){
       var cv=(args[0]||'').toLowerCase();
       if(!(cv in TCOL)){tLog('usage: color green | amber | white | blue | red | default');return}
@@ -1096,17 +1111,19 @@ body.fsmode .status{top:36px;height:24px}body.fsmode #clock,body.fsmode #wf{disp
     if(j.acc>=drainPeriod()){j.acc=0;battery=Math.max(0,battery-1);spent++;lowCheck();renderStatus();renderSide()}
     if(battery<=0){tLog('battery empty: attack stopped','err');tStop();return}
     if(watched(n,dt)){tLog('!! the admin is reading your logs','err');tStop();startBan(n);return}
-    if(j.lock>0){j.lock=Math.max(0,j.lock-dt);return}
+    if(j.lock>0){j.lock=Math.max(0,j.lock-dt);tLive('rate limited…  waiting '+Math.ceil(j.lock)+' s');return}
     var brute=j.m==='brute',secs=brute?n.secs:n.secs*0.2,p;
     if(brute){
       var before=n.prog;n.prog=Math.min(1,n.prog+dt/n.secs);
       if(n.sec.indexOf('WPA3')===0){[0.33,0.66].forEach(function(th){if(before<th&&n.prog>=th){j.lock=5;n.prog=th;tLog('[!] rate limit (WPA3): waiting 5 s','warn')}})}
       p=n.prog;
     }else{j.dp=Math.min(1,j.dp+dt/secs);p=j.dp}
-    var ks=brute?ksOf(n):10000,step=Math.floor(p*20);
+    var ks=brute?ksOf(n):10000,step=Math.floor(p*20),hit=(brute||n.weak)?hitFrac(n):1.01;
+    var found=(brute||n.weak)&&p>=hit;
+    if(!found)tLive('trying  '+candidate(n,brute)+'   '+Math.round(p*100)+'%  '+fnum(ks/secs)+' H/s');
     if(step>j.last){j.last=step;tLog('['+('  '+Math.round(p*100)).slice(-3)+'%] tried '+fnum(p*ks)+' keys  ('+fnum(ks/secs)+' H/s)')}
-    if(p>=1){
-      if(brute||n.weak){tLog('[+] KEY FOUND: '+n.password,'ok');tLog('    now type it in Wi-Fi settings to join '+n.name,'mut');tStop()}
+    if(found||p>=1){
+      if(found){tLive('');tLog('[+] KEY FOUND: '+n.password,'ok');tLog('    now type it in Wi-Fi settings to join '+n.name,'mut');tStop()}
       else{n.dictDone=true;tLog('[-] not in dictionary. try: attack '+n.name+' brute','warn');tStop()}
     }
   }
